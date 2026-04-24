@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFE Exam Prep</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <h1>Business Fundamentals Quiz</h1>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="progress-tracker">
+                    <span id="attempted-count">0</span> / <span id="total-count">0</span> Attempted
+                </div>
+                <button id="force-restart-btn" class="btn outline" style="padding: 6px 12px; font-size: 0.85rem; border-color: var(--error); color: var(--error);">Reset & Randomize</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <main class="quiz-section">
+            <div class="card">
+                <div class="question-header">
+                    <span class="question-number" id="q-number">Question 1</span>
+                    <span class="question-type" id="q-type">Single Choice</span>
+                </div>
+                <h2 id="question-text" class="question-text">Loading question...</h2>
+                <div id="options-container" class="options-container">
+                    </div>
+                
+                <div class="controls">
+                    <button id="prev-btn" class="btn secondary">Previous</button>
+                    <button id="clear-btn" class="btn outline">Clear Option</button>
+                    <button id="next-btn" class="btn primary">Next</button>
+                </div>
+            </div>
+
+            <button id="submit-btn" class="btn submit-btn">Submit Quiz</button>
+        </main>
+
+        <aside class="navigator-section card">
+            <h3>Navigator</h3>
+            <div class="nav-legend">
+                <span class="legend-item"><span class="box current"></span> Current</span>
+                <span class="legend-item"><span class="box attempted"></span> Attempted</span>
+                <span class="legend-item"><span class="box unattempted"></span> Unattempted</span>
+            </div>
+            <div id="nav-grid" class="nav-grid">
+                </div>
+        </aside>
+    </div>
+
+    <div id="result-modal" class="modal hidden">
+        <div class="modal-content card">
+            <h2>Quiz Results</h2>
+            <div class="score-display">
+                <span id="score-points">0</span> / <span id="total-points">180</span>
+            </div>
+            <p id="score-percentage">0%</p>
+            <div class="modal-actions">
+                <button id="review-btn" class="btn secondary">Review Answers</button>
+                <button id="restart-btn" class="btn primary">Restart Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
