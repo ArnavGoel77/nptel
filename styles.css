@@ -28,7 +28,7 @@ body {
 
 header {
     background-color: var(--surface-dark);
-    padding: 20px 0;
+    padding: 15px 0;
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
@@ -39,9 +39,20 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 h1 { font-size: 1.5rem; font-weight: 600; }
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
 .progress-tracker {
     font-size: 0.9rem;
@@ -70,19 +81,20 @@ h1 { font-size: 1.5rem; font-weight: 600; }
 .question-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
     font-size: 0.9rem;
 }
 
 .question-number { color: var(--primary); font-weight: 600; }
-.question-type { color: var(--secondary); background: rgba(3, 218, 198, 0.1); padding: 4px 10px; border-radius: 4px; }
+.question-type { color: var(--secondary); background: rgba(3, 218, 198, 0.1); padding: 4px 10px; border-radius: 4px; text-align: right;}
 .question-text { font-size: 1.25rem; font-weight: 500; margin-bottom: 30px; }
 
-.options-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px; }
+.options-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
 
 .option-label {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding: 15px 20px;
     background-color: var(--surface-light);
     border: 2px solid transparent;
@@ -94,13 +106,19 @@ h1 { font-size: 1.5rem; font-weight: 600; }
 .option-label:hover { border-color: var(--border); }
 .option-label.selected { border-color: var(--primary); background-color: rgba(187, 134, 252, 0.05); }
 
-.option-label input { margin-right: 15px; accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; }
+.option-label input { margin-top: 4px; margin-right: 15px; accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;}
 
 /* Review Mode Colors */
 .option-label.correct { border-color: var(--secondary); background-color: rgba(3, 218, 198, 0.1); }
 .option-label.wrong { border-color: var(--error); background-color: rgba(207, 102, 121, 0.1); }
 
-.controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.controls { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 30px; 
+    gap: 15px;
+}
 
 .btn {
     padding: 12px 24px;
@@ -124,7 +142,7 @@ h1 { font-size: 1.5rem; font-weight: 600; }
 
 .navigator-section { align-self: start; position: sticky; top: 100px; }
 
-.nav-legend { display: flex; gap: 15px; margin: 20px 0; font-size: 0.85rem; color: var(--text-muted); }
+.nav-legend { display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; font-size: 0.85rem; color: var(--text-muted); }
 .legend-item { display: flex; align-items: center; gap: 5px; }
 .box { width: 12px; height: 12px; border-radius: 3px; }
 .box.current { border: 2px solid var(--primary); background: transparent; }
@@ -153,6 +171,9 @@ h1 { font-size: 1.5rem; font-weight: 600; }
     font-size: 0.85rem;
     cursor: pointer;
     transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-btn:hover { background-color: #3d3d3d; color: var(--text-main); }
@@ -160,6 +181,7 @@ h1 { font-size: 1.5rem; font-weight: 600; }
 .nav-btn.current { border: 2px solid var(--primary); box-shadow: inset 0 0 0 1px var(--bg-dark); }
 .nav-btn.review-wrong { background-color: var(--error); color: #000;}
 .nav-btn.review-correct { background-color: var(--secondary); color: #000;}
+.nav-btn.review-partial { background-color: #f6e05e; color: #000; font-weight: 600;}
 
 /* Modal Styles */
 .modal {
@@ -172,9 +194,89 @@ h1 { font-size: 1.5rem; font-weight: 600; }
 .modal.hidden { display: none; }
 .modal-content { text-align: center; max-width: 400px; width: 90%; }
 .score-display { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin: 20px 0; }
-.modal-actions { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
-.nav-btn.review-partial { background-color: #f6e05e; color: #000; font-weight: 600;}
+.modal-actions { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 30px; }
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+
+/* Tablets & Small Laptops */
 @media (max-width: 900px) {
-    .main-container { grid-template-columns: 1fr; }
-    .navigator-section { position: static; }
+    .main-container { 
+        grid-template-columns: 1fr; 
+        gap: 20px;
+    }
+    .navigator-section { 
+        position: static; 
+    }
+    .nav-grid {
+        max-height: 40vh; /* Don't let it take over the whole screen */
+    }
+}
+
+/* Mobile Phones */
+@media (max-width: 600px) {
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .header-content > div {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+    }
+
+    .main-container {
+        margin: 15px auto;
+        padding: 0 10px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .question-text {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .option-label {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+    }
+
+    .controls {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .controls .btn {
+        flex: 1 1 auto; /* Make buttons stretch evenly */
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    /* Force the 'Clear Option' button to its own full-width row on mobile for better touch targets */
+    #clear-btn {
+        order: 3;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    #prev-btn { order: 1; }
+    #next-btn { order: 2; }
+
+    .nav-grid {
+        /* Make buttons slightly larger on mobile so they are easier to tap */
+        grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+        gap: 10px;
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
+    }
 }
