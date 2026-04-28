@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BFE Exam Prep - Enhanced</title>
+    <title>BFE Exam Prep - Pro Edition</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,21 +15,7 @@
             <h1>✨ Aritra Boom Boom Bokachoda Quiz</h1>
             <div class="header-actions">
                 <button id="stats-btn" class="btn secondary" style="padding: 10px 15px; font-size: 0.95rem;">📊 My Stats</button>
-                <select id="week-filter" class="custom-select">
-                    <option value="all">All Weeks (1-12)</option>
-                    <option value="1">Week 1</option>
-                    <option value="2">Week 2</option>
-                    <option value="3">Week 3</option>
-                    <option value="4">Week 4</option>
-                    <option value="5">Week 5</option>
-                    <option value="6">Week 6</option>
-                    <option value="7">Week 7</option>
-                    <option value="8">Week 8</option>
-                    <option value="9">Week 9</option>
-                    <option value="10">Week 10</option>
-                    <option value="11">Week 11</option>
-                    <option value="12">Week 12</option>
-                </select>
+                <button id="filter-btn" class="custom-select" style="display: flex; align-items: center; justify-content: center; gap: 8px;">📚 Loading...</button>
                 <div class="progress-tracker">
                     <span id="attempted-count">0</span> / <span id="total-count">0</span> Attempted
                 </div>
@@ -80,10 +66,31 @@
         </div>
     </div>
 
+    <div id="filter-modal" class="modal hidden">
+        <div class="modal-content card" style="max-width: 500px; text-align: left;">
+            <h2 style="text-align: center; margin-bottom: 5px;">📚 Select Modules</h2>
+            <p style="text-align: center; color: var(--error); font-size: 0.9rem; margin-bottom: 20px;">Applying a new filter will restart your current quiz.</p>
+            
+            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                <label class="filter-label" style="background: rgba(167, 139, 250, 0.1); border-color: var(--primary);">
+                    <input type="checkbox" id="filter-all"> <strong style="color: var(--primary-light);">Select All Modules (0-12)</strong>
+                </label>
+            </div>
+            
+            <div id="week-cb-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 40vh; overflow-y: auto; padding-right: 5px;">
+                </div>
+            
+            <div class="modal-actions" style="margin-top: 30px;">
+                <button id="close-filter-btn" class="btn outline" style="flex: 1;">Cancel</button>
+                <button id="apply-filter-btn" class="btn primary" style="flex: 1;">Apply & Restart</button>
+            </div>
+        </div>
+    </div>
+
     <div id="stats-modal" class="modal hidden">
         <div class="modal-content card" style="max-width: 500px; text-align: left;">
             <h2 style="text-align: center; margin-bottom: 5px;">📊 Performance Analytics</h2>
-            <div id="stats-container" style="margin-top: 10px;"></div>
+            <div id="stats-container" style="margin-top: 10px; max-height: 60vh; overflow-y: auto; padding-right: 10px;"></div>
             <div class="modal-actions" style="margin-top: 30px;">
                 <button id="close-stats-btn" class="btn outline" style="width: 100%;">Close</button>
             </div>

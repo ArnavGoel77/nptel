@@ -19,6 +19,33 @@ const db = getFirestore(app);
 
 // --- 2. RAW QUESTION DATA ---
 const rawDataString = `
+[Assignment 0]
+1. What is a 'Startup'? a. An early-stage, innovative company designed to develop and validate a scalable business model for a market need. b. Any business, regardless of its stage or growth. c. A company that should never aim for scalability. d. A successful startup need not address any market need. | Ans: An early-stage, innovative company designed to develop and validate a scalable business model for a market need.
+2. What is a 'Business Plan'? a. A formal document that outlines goals, strategies, and the roadmap of a business. b. A story one can talk about a business idea. c. A plan that should not include measurable goals. d. A report that only describes operations but not strategies. | Ans: A formal document that outlines goals, strategies, and the roadmap of a business.
+3. Which of the following is not an Indian-origin company? a. Larsen & Toubro (L&T) b. Apple c. Tata Motors d. Bharat Forge | Ans: Apple
+4. Identify the correct company-business type pair. a. Indian Oil Corporation - Commodity Business b. Google - Manufacturing Business c. Reliance Jio - Manufacturing Business d. Flipkart - Manufacturing Business | Ans: Indian Oil Corporation - Commodity Business
+5. Which of the following represents an Indian conglomerate? a. Mitsubishi Group b. LG Corporation c. Tata Group d. Panasonic | Ans: Tata Group
+6. Which of the following is not a good company value? a. Respect for each other b. Passion for excellence c. Making profits even if it harms the environment d. Striving for continuous improvement | Ans: Making profits even if it harms the environment
+7. Managing a cultural transformation in a company can be achieved by: a. Role-modelling, re-skilling, and up-skilling employees. b. Stopping communication across the company. c. Only hiring graduates from elite B-schools. d. It is impossible to transform a company's culture. | Ans: Role-modelling, re-skilling, and up-skilling employees.
+8. Which of the following food items is considered minimally processed? a. Packaged fruit juice b. Potato c. Biscuits d. Instant soup | Ans: Potato
+9. What does 'Accounting' include? a. Only collecting financial data. b. Collecting, measuring, processing, storing, and sharing financial and related information about a company. c. Only preparing financial statements. d. Only processing financial data for tax purposes. | Ans: Collecting, measuring, processing, storing, and sharing financial and related information about a company.
+10. What is a 'Customer Pricing Model'? a. A strategic framework companies use to determine product or service prices. b. A guessing method customers use to estimate prices. c. A pricing model for school exhibitions only. d. A concept that is irrelevant in the real business world. | Ans: A strategic framework companies use to determine product or service prices.
+11. Which of the following statements correctly defines 'Market Research'? a. It is the study of only customer preferences. b. It excludes analysis of emerging technologies. c. It focuses solely on competitors. d. It is a systematic study of markets, customers, competitors, products, and emerging technologies. | Ans: It is a systematic study of markets, customers, competitors, products, and emerging technologies.
+12. To help a founder define her company's Customer Value Proposition, which questions are most relevant? a. What product or service brand is being built and what benefits does it offer? b. What furniture should be bought for the office? c. What customer 'needs' or 'jobs' does the product fulfil? d. What benefits will customers gain by meeting those needs through this product? | Ans: What product or service brand is being built and what benefits does it offer? What customer 'needs' or 'jobs' does the product fulfil? What benefits will customers gain by meeting those needs through this product?
+13. Which of the following are valid examples of sales channels? a. Traditional retail stores b. Supermarkets and hypermarkets c. Exclusive brand stores d. Online platforms and websites | Ans: Traditional retail stores Supermarkets and hypermarkets Exclusive brand stores Online platforms and websites
+14. What is the first step in creating a Digital Marketing Strategy? a. Define goals and objectives. b. Select media channels. c. Learn about target customers. d. Measure engagement levels. | Ans: Define goals and objectives.
+15. Which of the following statements are correct about Value-Based Marketing? a. Create value through offering affordable customer pricing. b. Communicate value through branding and advertising. c. Deliver value through proper distribution and customer engagement. d. Value creation is only a theoretical idea. | Ans: Create value through offering affordable customer pricing. Communicate value through branding and advertising. Deliver value through proper distribution and customer engagement.
+16. Which arguments against Sales Automation are incorrect? a. It reduces sales-force productivity. b. It decreases company revenue. c. It enables faster customer response. d. It builds deeper customer engagement. | Ans: It reduces sales-force productivity. It decreases company revenue.
+17. Which of the following metrics can be used to measure Customer Loyalty? a. Customer satisfaction b. Customer retention and lifetime value c. Market share and share of wallet d. Revenue and profitability | Ans: Customer satisfaction Customer retention and lifetime value Market share and share of wallet Revenue and profitability
+18. Which of the following skills are essential in a Basic Supply Chain Training module? a. Advanced calculus b. Warehouse management c. Office interior decoration d. Demand forecasting | Ans: Warehouse management Demand forecasting
+19. "New environmental regulations requiring costly operational changes" represent which type of business risk? a. Market risk b. Political risk c. Regulatory risk d. Human risk | Ans: Regulatory risk
+20. What does Business Information refer to? a. Random gossip about companies found online. b. Data, insights, and knowledge that an organization systematically collects and uses. c. A concept not recognized in management science. d. Information that cannot be defined clearly. | Ans: Data, insights, and knowledge that an organization systematically collects and uses.
+21. What is 'MIS'? a. Marketing Index System. b. Modern Intelligence Software. c. Management Information System - helps managers organize, evaluate, and control organizational operations. d. Management Irrelevant Statistics. | Ans: Management Information System - helps managers organize, evaluate, and control organizational operations.
+22. Which of the following is not a relevant question when identifying drivers of innovation? a. Who is the target customer? b. How big is the potential market? c. What should be the right price to sell the product? d. What is the timeline for annual performance reviews? | Ans: What is the timeline for annual performance reviews?
+23. Paying attention to ESG (Environmental, Social, Governance) factors: a. Depends purely on managerial bias. b. Reduces company returns and should be avoided. c. Can improve returns in the long run and should be encouraged. d. Is vague and impossible to measure. | Ans: Can improve returns in the long run and should be encouraged.
+24. The '3C' formula for effective business communication stands for: a. Calling Customers Constantly b. Copy, Convince, Cheat c. Communication Cannot Be Simplified d. Correctness, Conciseness, Clarity | Ans: Correctness, Conciseness, Clarity
+25. A Social Business can be best described as: a. A mission-driven enterprise that solves social or environmental issues sustainably. b. A theoretical concept only. c. A financially unsustainable organization. d. A business that always incurs losses. | Ans: A mission-driven enterprise that solves social or environmental issues sustainably.
+
 [Assignment 1]
 1. Which of the following is an Indian-origin diversified business group that operates across multiple industries? a. Unilever b. Tata Group c. Amazon d. Microsoft | Ans: Tata Group
 2. Which of the following aspects best represents the 'social environment' of a business organization? a. Social values and cultural traditions b. Interest rates and inflation c. Industrial production levels d. Technological investments | Ans: Social values and cultural traditions
@@ -270,12 +297,14 @@ function shuffleArray(array) {
     return arr;
 }
 
+const TOTAL_WEEKS = 13; // 0 through 12
 let questions = [];
 let currentIndex = 0;
 let userAnswers = {};
 let reviewMode = false;
-let currentFilter = 'all';
+let currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
 
+// DOM Elements
 const qNumberEl = document.getElementById('q-number');
 const qTypeEl = document.getElementById('q-type');
 const qTextEl = document.getElementById('question-text');
@@ -289,7 +318,30 @@ const attemptedCountEl = document.getElementById('attempted-count');
 const totalCountEl = document.getElementById('total-count');
 const resultModal = document.getElementById('result-modal');
 const resetModal = document.getElementById('reset-modal');
-const weekFilter = document.getElementById('week-filter');
+const filterBtn = document.getElementById('filter-btn');
+
+// Inject Checkboxes for Filter Modal
+const weekCbContainer = document.getElementById('week-cb-container');
+for(let i=0; i<TOTAL_WEEKS; i++) {
+    const lbl = document.createElement('label');
+    lbl.className = 'filter-label';
+    lbl.innerHTML = `<input type="checkbox" class="week-cb" value="${i}"> <span>Week ${i}</span>`;
+    weekCbContainer.appendChild(lbl);
+}
+const weekCbs = document.querySelectorAll('.week-cb');
+const filterAllCb = document.getElementById('filter-all');
+
+function updateFilterBtnUI() {
+    if (currentFilter.length === TOTAL_WEEKS) {
+        filterBtn.innerHTML = `📚 All Modules (0-12) ▼`;
+    } else if (currentFilter.length === 0) {
+        filterBtn.innerHTML = `📚 None Selected ▼`;
+    } else if (currentFilter.length <= 3) {
+        filterBtn.innerHTML = `📚 Weeks: ${currentFilter.join(', ')} ▼`;
+    } else {
+        filterBtn.innerHTML = `📚 ${currentFilter.length} Modules ▼`;
+    }
+}
 
 function initQuiz() {
     const isSubmitted = localStorage.getItem('bfe_quiz_submitted');
@@ -297,8 +349,19 @@ function initQuiz() {
         localStorage.removeItem('bfe_quiz_state');
         localStorage.removeItem('bfe_quiz_submitted');
     }
-    currentFilter = localStorage.getItem('bfe_quiz_filter') || 'all';
-    weekFilter.value = currentFilter;
+    
+    // Load Multi-Filter
+    const storedFilter = localStorage.getItem('bfe_quiz_filter');
+    if(storedFilter) {
+        try {
+            currentFilter = JSON.parse(storedFilter);
+        } catch(e) {
+            currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
+        }
+    } else {
+        currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
+    }
+    updateFilterBtnUI();
 
     const savedState = JSON.parse(localStorage.getItem('bfe_quiz_state'));
     if (savedState && savedState.questions) {
@@ -306,15 +369,14 @@ function initQuiz() {
         userAnswers = savedState.userAnswers || {};
     } else {
         const parsedQuestions = parseData(rawDataString);
-        let filteredQuestions = parsedQuestions;
-        if (currentFilter !== 'all') {
-            const selectedWeek = parseInt(currentFilter);
-            filteredQuestions = parsedQuestions.filter(q => q.week === selectedWeek);
-        }
+        // Filter based on active array
+        let filteredQuestions = parsedQuestions.filter(q => currentFilter.includes(q.week));
+        
         questions = shuffleArray(filteredQuestions);
         questions.forEach(q => q.options = shuffleArray(q.options));
         saveState();
     }
+    
     totalCountEl.textContent = questions.length;
     renderNavGrid();
     loadQuestion(0);
@@ -342,7 +404,10 @@ function updateProgress() {
 }
 
 function loadQuestion(index) {
-    if (questions.length === 0) return;
+    if (questions.length === 0) {
+        qTextEl.textContent = "No modules selected! Please adjust your filter.";
+        return;
+    }
     currentIndex = index;
     const q = questions[currentIndex];
     
@@ -427,20 +492,28 @@ function renderNavGrid() {
     });
 }
 
-// --- 4. SUBMIT QUIZ & ANALYTICS STORAGE ---
-let scorePosted = false; // Flag to prevent multiple submissions to Firebase
+// --- 4. SUBMIT QUIZ & ADVANCED ANALYTICS STORAGE ---
+let scorePosted = false;
 
 submitBtn.addEventListener('click', () => {
     if(reviewMode || questions.length === 0) return;
     
     let score = 0;
+    let weekStatsThisSession = {}; 
+    
     questions.forEach(q => {
         const selected = userAnswers[q.id] || [];
         const correct = q.correctAnswers;
+        
+        if(!weekStatsThisSession[q.week]) weekStatsThisSession[q.week] = { earned: 0, count: 0 };
+        weekStatsThisSession[q.week].count += 1;
+
         if (selected.length > 0 && correct.length > 0) {
             const hasWrongSelection = selected.some(val => !correct.includes(val));
             if (!hasWrongSelection) {
-                score += (selected.length / correct.length);
+                const pointsEarned = selected.length / correct.length;
+                score += pointsEarned;
+                weekStatsThisSession[q.week].earned += pointsEarned;
             }
         }
     });
@@ -452,18 +525,21 @@ submitBtn.addEventListener('click', () => {
     document.getElementById('total-points').textContent = questions.length;
     document.getElementById('score-percentage').textContent = `${finalAccuracy}% Accuracy`;
     
-    // Save to Personal Analytics History
+    const filterString = currentFilter.length === TOTAL_WEEKS ? 'all' : currentFilter.sort((a,b)=>a-b).join(',');
+
+    // Save Advanced Personal Analytics History
     let history = JSON.parse(localStorage.getItem('bfe_quiz_history')) || [];
     history.push({
         score: pointsEarned,
         total: questions.length,
         accuracy: finalAccuracy,
-        week: currentFilter,
+        filterTag: filterString, 
+        weekBreakdown: weekStatsThisSession, // Store deep accuracy for each module taken!
         date: new Date().getTime()
     });
     localStorage.setItem('bfe_quiz_history', JSON.stringify(history));
 
-    // Reset Leaderboard UI state for new completion
+    // Reset Leaderboard UI state
     scorePosted = false;
     document.getElementById('post-feedback').classList.add('hidden');
     document.getElementById('player-name').value = '';
@@ -488,6 +564,7 @@ document.getElementById('post-score-btn').addEventListener('click', async () => 
     
     const finalScore = parseFloat(document.getElementById('score-points').textContent);
     const totalQ = parseInt(document.getElementById('total-points').textContent);
+    const filterString = currentFilter.length === TOTAL_WEEKS ? 'all' : currentFilter.sort((a,b)=>a-b).join(',');
     const btn = document.getElementById('post-score-btn');
     
     btn.textContent = 'Posting...';
@@ -498,13 +575,13 @@ document.getElementById('post-score-btn').addEventListener('click', async () => 
             name: name,
             score: finalScore,
             total: totalQ,
-            filter: currentFilter,
+            filter: filterString,
             timestamp: Date.now()
         });
         scorePosted = true;
         document.getElementById('post-feedback').classList.remove('hidden');
         btn.textContent = 'Posted!';
-        fetchLeaderboard(); // Refresh the board instantly
+        fetchLeaderboard();
     } catch (e) {
         console.error(e);
         btn.textContent = 'Post';
@@ -517,7 +594,6 @@ document.getElementById('post-score-btn').addEventListener('click', async () => 
 async function fetchLeaderboard() {
     const container = document.getElementById('leaderboard-container');
     try {
-        // Order by score descending, limit to Top 10
         const q = query(collection(db, "leaderboard"), orderBy("score", "desc"), limit(10));
         const querySnapshot = await getDocs(q);
         
@@ -525,7 +601,11 @@ async function fetchLeaderboard() {
         let rank = 1;
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            const tag = data.filter !== 'all' ? `<span style="font-size: 0.75rem; color: var(--text-muted);"> (W${data.filter})</span>` : '';
+            // Truncate filter string if it's too long
+            let tagStr = data.filter;
+            if(tagStr !== 'all' && tagStr.length > 8) tagStr = tagStr.substring(0, 8) + '...';
+            
+            const tag = data.filter !== 'all' ? `<span style="font-size: 0.75rem; color: var(--text-muted);"> (W: ${tagStr})</span>` : '';
             html += `
                 <li>
                     <span class="rank">#${rank}</span>
@@ -547,7 +627,7 @@ async function fetchLeaderboard() {
     }
 }
 
-// --- 7. PERSONAL ANALYTICS DASHBOARD ---
+// --- 7. ADVANCED PERSONAL ANALYTICS DASHBOARD ---
 document.getElementById('stats-btn').addEventListener('click', () => {
     const history = JSON.parse(localStorage.getItem('bfe_quiz_history')) || [];
     const container = document.getElementById('stats-container');
@@ -558,50 +638,56 @@ document.getElementById('stats-btn').addEventListener('click', () => {
         const totalAcc = history.reduce((sum, h) => sum + h.accuracy, 0);
         const avgAcc = (totalAcc / history.length).toFixed(1);
 
-        // Aggregate by week
-        const weekStats = {};
+        // Aggregate deep accuracy by individual week across all historical sessions
+        const globalWeekStats = {};
+        for(let i=0; i<TOTAL_WEEKS; i++) globalWeekStats[i] = { earned: 0, count: 0 };
+
         history.forEach(h => {
-            if (h.week !== 'all') {
-                if(!weekStats[h.week]) weekStats[h.week] = { sum: 0, count: 0 };
-                weekStats[h.week].sum += h.accuracy;
-                weekStats[h.week].count += 1;
+            if(h.weekBreakdown) {
+                for(let w in h.weekBreakdown) {
+                    globalWeekStats[w].earned += h.weekBreakdown[w].earned;
+                    globalWeekStats[w].count += h.weekBreakdown[w].count;
+                }
             }
         });
 
         let html = `
-            <div style="text-align: center; margin-bottom: 30px;">
+            <div style="text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
                 <h3 style="color: var(--primary); font-size: 2.5rem;">${avgAcc}%</h3>
                 <p style="color: var(--text-muted); font-size: 0.95rem;">Average Accuracy across ${history.length} attempts</p>
             </div>
         `;
 
-        if(Object.keys(weekStats).length > 0) {
-            html += `<h4 style="margin-bottom: 20px; color: var(--text-main);">Performance by Module</h4>`;
-            for(let w=1; w<=12; w++) {
-                if(weekStats[w]) {
-                    const wAvg = (weekStats[w].sum / weekStats[w].count).toFixed(1);
-                    const barColor = wAvg >= 80 ? 'var(--secondary)' : (wAvg >= 50 ? 'var(--accent)' : 'var(--error)');
-                    
-                    html += `
-                        <div class="stat-row">
-                            <div class="stat-label">Week ${w}</div>
-                            <div class="stat-bar-bg">
-                                <div class="stat-bar-fill" style="width: ${wAvg}%; background: ${barColor};"></div>
-                            </div>
-                            <div class="stat-value" style="color: ${barColor}">${wAvg}%</div>
+        html += `<h4 style="margin-bottom: 20px; color: var(--text-main);">Module Mastery (Deep Accuracy)</h4>`;
+        let hasModuleData = false;
+        
+        for(let w=0; w<TOTAL_WEEKS; w++) {
+            if(globalWeekStats[w].count > 0) {
+                hasModuleData = true;
+                const wAcc = Math.round((globalWeekStats[w].earned / globalWeekStats[w].count) * 100);
+                const barColor = wAcc >= 80 ? 'var(--secondary)' : (wAcc >= 50 ? 'var(--accent)' : 'var(--error)');
+                
+                html += `
+                    <div class="stat-row">
+                        <div class="stat-label">Week ${w}</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill" style="width: ${wAcc}%; background: ${barColor};"></div>
                         </div>
-                    `;
-                }
+                        <div class="stat-value" style="color: ${barColor}">${wAcc}%</div>
+                    </div>
+                `;
             }
-        } else {
-            html += `<p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Take some module-specific quizzes (using the Week filter) to unlock weak-point tracking!</p>`;
+        }
+        
+        if(!hasModuleData) {
+            html += `<p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Complete quizzes to generate module mastery data.</p>`;
         }
 
         html += `
             <div class="prediction-box">
-                <h4 style="color: var(--secondary); margin-bottom: 5px;">🎯 Predicted Exam Score</h4>
+                <h4 style="color: var(--secondary); margin-bottom: 5px;">🎯 Predicted Final Exam Score</h4>
                 <p style="font-size: 1.8rem; font-weight: bold; color: white;">${Math.round((avgAcc / 100) * 180)} <span style="font-size: 1rem; color: var(--text-muted);">/ 180</span></p>
-                <p style="font-size: 0.85rem; opacity: 0.8; color: var(--text-muted); margin-top: 5px;">Based on your historical performance.</p>
+                <p style="font-size: 0.85rem; opacity: 0.8; color: var(--text-muted); margin-top: 5px;">Based on historical trajectory.</p>
             </div>
         `;
 
@@ -614,7 +700,8 @@ document.getElementById('close-stats-btn').addEventListener('click', () => {
     document.getElementById('stats-modal').classList.add('hidden');
 });
 
-// --- 8. REVIEW & RESET FLOWS ---
+
+// --- 8. REVIEW FLOWS ---
 document.getElementById('review-btn').addEventListener('click', () => {
     reviewMode = true;
     resultModal.classList.add('hidden');
@@ -645,27 +732,66 @@ document.getElementById('review-btn').addEventListener('click', () => {
     loadQuestion(0);
 });
 
-let pendingFilterChange = null;
 
-document.getElementById('force-restart-btn')?.addEventListener('click', () => {
-    pendingFilterChange = null; 
-    document.getElementById('reset-msg').textContent = "Are you sure you want to restart? Your current progress will be lost.";
-    resetModal.classList.remove('hidden');
+// --- 9. MULTI-WEEK FILTER LOGIC ---
+const filterModal = document.getElementById('filter-modal');
+
+// Open Filter Modal
+filterBtn.addEventListener('click', () => {
+    if(currentFilter.length === TOTAL_WEEKS) {
+        filterAllCb.checked = true;
+        weekCbs.forEach(cb => cb.checked = true);
+    } else {
+        filterAllCb.checked = false;
+        weekCbs.forEach(cb => {
+            cb.checked = currentFilter.includes(parseInt(cb.value));
+        });
+    }
+    filterModal.classList.remove('hidden');
 });
 
-weekFilter.addEventListener('change', (e) => {
-    pendingFilterChange = e.target.value;
-    document.getElementById('reset-msg').textContent = "Changing the filter will restart the quiz. Proceed?";
+// Close Filter Modal
+document.getElementById('close-filter-btn').addEventListener('click', () => {
+    filterModal.classList.add('hidden');
+});
+
+// Check/Uncheck All
+filterAllCb.addEventListener('change', (e) => {
+    weekCbs.forEach(cb => cb.checked = e.target.checked);
+});
+
+// Individual Checkboxes interact with 'Select All'
+weekCbs.forEach(cb => {
+    cb.addEventListener('change', () => {
+        const allChecked = Array.from(weekCbs).every(c => c.checked);
+        filterAllCb.checked = allChecked;
+    });
+});
+
+// Apply New Filter
+document.getElementById('apply-filter-btn').addEventListener('click', () => {
+    const selected = Array.from(weekCbs).filter(cb => cb.checked).map(cb => parseInt(cb.value));
+    if(selected.length === 0) {
+        alert("Please select at least one module.");
+        return;
+    }
+    localStorage.setItem('bfe_quiz_filter', JSON.stringify(selected));
+    localStorage.removeItem('bfe_quiz_state');
+    localStorage.removeItem('bfe_quiz_submitted');
+    location.reload();
+});
+
+// --- 10. HARD RESET LOGIC ---
+document.getElementById('force-restart-btn')?.addEventListener('click', () => {
+    document.getElementById('reset-msg').textContent = "Are you sure you want to restart? Your current progress will be lost.";
     resetModal.classList.remove('hidden');
 });
 
 document.getElementById('cancel-reset-btn').addEventListener('click', () => {
     resetModal.classList.add('hidden');
-    weekFilter.value = currentFilter;
 });
 
 document.getElementById('confirm-reset-btn').addEventListener('click', () => {
-    if (pendingFilterChange !== null) localStorage.setItem('bfe_quiz_filter', pendingFilterChange);
     localStorage.removeItem('bfe_quiz_state');
     localStorage.removeItem('bfe_quiz_submitted');
     location.reload();
