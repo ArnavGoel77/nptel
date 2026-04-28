@@ -350,11 +350,15 @@ function initQuiz() {
         localStorage.removeItem('bfe_quiz_submitted');
     }
     
-    // Load Multi-Filter
+    // Load Multi-Filter with Safety Check
     const storedFilter = localStorage.getItem('bfe_quiz_filter');
     if(storedFilter) {
         try {
             currentFilter = JSON.parse(storedFilter);
+            // FIX: If the old version saved a number/string instead of an Array, reset it to prevent crashing.
+            if (!Array.isArray(currentFilter)) {
+                currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
+            }
         } catch(e) {
             currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
         }
