@@ -204,39 +204,55 @@ const rawDataString = `
 15. You are creating the 'Operational Plan' for a manufacturing company that manufactures high-quality laptops. Which of the following points will you include in this plan, based on your learning in the course? a. Staffing b. What will the company do after 2000 years? c. Supplier partnerships d. Daily Production | Ans: Staffing, Supplier partnerships, Daily Production
 `;
 
-// IMPROVED PARSING LOGIC
+// IMPROVED PARSING LOGIC with Week Filtering
 function parseData(rawData) {
-    const lines = rawData.split('\n').filter(line => /^\d+\./.test(line.trim()));
-    return lines.map((line, index) => {
-        const [qPart, ansPart] = line.split(' | Ans: ');
+    // Split by "[Assignment X]"
+    const blocks = rawData.split(/\[Assignment\s+(\d+)\]/i);
+    let allParsed = [];
+    
+    // i=0 is empty space before first assignment. 
+    // i=1 is the week number, i=2 is the block of questions, etc.
+    for (let i = 1; i < blocks.length; i += 2) {
+        const weekNum = parseInt(blocks[i]);
+        const weekText = blocks[i+1];
         
-        // Splits the string by finding " a. ", " b. ", " C. ", " D. " regardless of capitalization
-        const parts = qPart.split(/(?:\s+|^)[a-e]\.\s+/i);
+        const lines = weekText.split('\n').filter(line => /^\d+\./.test(line.trim()));
         
-        const questionText = parts[0].substring(parts[0].indexOf('.') + 1).trim();
-        
-        const options = [];
-        for (let i = 1; i < parts.length; i++) {
-            const optText = parts[i].trim();
-            if (optText) options.push(optText);
-        }
+        const parsedLines = lines.map((line, index) => {
+            const [qPart, ansPart] = line.split(' | Ans: ');
+            
+            // Splits the string by finding " a. ", " b. ", " C. ", " D. " regardless of capitalization
+            const parts = qPart.split(/(?:\s+|^)[a-e]\.\s+/i);
+            const questionText = parts[0].substring(parts[0].indexOf('.') + 1).trim();
+            
+            const options = [];
+            for (let j = 1; j < parts.length; j++) {
+                const optText = parts[j].trim();
+                if (optText) options.push(optText);
+            }
 
-        // Normalize text to prevent typos/spacing/casing issues from failing the match
-        const safeAnsPart = (ansPart || "").toLowerCase().replace(/\s+/g, ' ');
-        
-        const correctAnswers = options.filter(opt => {
-            const safeOpt = opt.toLowerCase().replace(/\s+/g, ' ');
-            return safeAnsPart.includes(safeOpt);
+            // Normalize text to prevent typos/spacing/casing issues from failing the match
+            const safeAnsPart = (ansPart || "").toLowerCase().replace(/\s+/g, ' ');
+            
+            const correctAnswers = options.filter(opt => {
+                const safeOpt = opt.toLowerCase().replace(/\s+/g, ' ');
+                return safeAnsPart.includes(safeOpt);
+            });
+
+            return {
+                id: `w${weekNum}_q${index + 1}`, // Unique ID tied to week and question number
+                week: weekNum,
+                question: questionText,
+                options: options,
+                correctAnswers: correctAnswers,
+                type: correctAnswers.length > 1 ? 'multiple' : 'single'
+            };
         });
-
-        return {
-            id: index + 1,
-            question: questionText,
-            options: options,
-            correctAnswers: correctAnswers,
-            type: correctAnswers.length > 1 ? 'multiple' : 'single'
-        };
-    });
+        
+        allParsed = allParsed.concat(parsedLines);
+    }
+    
+    return allParsed;
 }
 
 // Utils: Fisher-Yates Shuffle
@@ -254,6 +270,7 @@ let questions = [];
 let currentIndex = 0;
 let userAnswers = {}; // Format: { questionId: [selectedOptions] }
 let reviewMode = false;
+let currentFilter = 'all';
 
 // DOM Elements
 const qNumberEl = document.getElementById('q-number');
@@ -268,15 +285,23 @@ const submitBtn = document.getElementById('submit-btn');
 const attemptedCountEl = document.getElementById('attempted-count');
 const totalCountEl = document.getElementById('total-count');
 const resultModal = document.getElementById('result-modal');
+const resetModal = document.getElementById('reset-modal');
+const weekFilter = document.getElementById('week-filter');
 
 // Init
 function initQuiz() {
+    // 1. Check if the quiz was previously submitted
     const isSubmitted = localStorage.getItem('bfe_quiz_submitted');
     if (isSubmitted) {
         localStorage.removeItem('bfe_quiz_state');
         localStorage.removeItem('bfe_quiz_submitted');
     }
 
+    // 2. Load the preferred filter
+    currentFilter = localStorage.getItem('bfe_quiz_filter') || 'all';
+    weekFilter.value = currentFilter;
+
+    // 3. Load state or parse new randomized list
     const savedState = JSON.parse(localStorage.getItem('bfe_quiz_state'));
     
     if (savedState && savedState.questions) {
@@ -284,7 +309,15 @@ function initQuiz() {
         userAnswers = savedState.userAnswers || {};
     } else {
         const parsedQuestions = parseData(rawDataString);
-        questions = shuffleArray(parsedQuestions);
+        let filteredQuestions = parsedQuestions;
+        
+        // Apply week filter if one is selected
+        if (currentFilter !== 'all') {
+            const selectedWeek = parseInt(currentFilter);
+            filteredQuestions = parsedQuestions.filter(q => q.week === selectedWeek);
+        }
+
+        questions = shuffleArray(filteredQuestions);
         questions.forEach(q => q.options = shuffleArray(q.options));
         saveState();
     }
@@ -321,10 +354,13 @@ function updateProgress() {
 }
 
 function loadQuestion(index) {
+    if (questions.length === 0) return; // Edge case safeguard
+    
     currentIndex = index;
     const q = questions[currentIndex];
     
-    qNumberEl.textContent = `Question ${index + 1}`;
+    // Updated header format: "Question 5 (Week 2)"
+    qNumberEl.textContent = `Question ${index + 1} (Week ${q.week})`;
     qTypeEl.textContent = q.type === 'multiple' ? 'Multiple Choice (MSQ)' : 'Single Choice';
     qTextEl.textContent = q.question;
     
@@ -396,6 +432,7 @@ nextBtn.addEventListener('click', () => {
 });
 
 clearBtn.addEventListener('click', () => {
+    if (questions.length === 0) return;
     const qId = questions[currentIndex].id;
     userAnswers[qId] = [];
     saveState();
@@ -415,7 +452,7 @@ function renderNavGrid() {
 
 // PARTIAL SCORING LOGIC
 submitBtn.addEventListener('click', () => {
-    if(reviewMode) return;
+    if(reviewMode || questions.length === 0) return;
     
     let score = 0;
     questions.forEach(q => {
@@ -475,7 +512,7 @@ document.getElementById('review-btn').addEventListener('click', () => {
         if (isCorrect) {
             btn.classList.add('review-correct');
         } else if (isPartial) {
-            btn.classList.add('review-partial'); // Applies the new yellow style
+            btn.classList.add('review-partial');
         } else if (isWrong) {
             btn.classList.add('review-wrong');
         }
@@ -484,12 +521,41 @@ document.getElementById('review-btn').addEventListener('click', () => {
     loadQuestion(0);
 });
 
+// MODAL & FILTER LOGIC
+let pendingFilterChange = null;
+
+// Handle the "Reset & Randomize" Button
 document.getElementById('force-restart-btn')?.addEventListener('click', () => {
-    if(confirm('Start a fresh randomized quiz? Current progress will be lost.')) {
-        localStorage.removeItem('bfe_quiz_state');
-        localStorage.removeItem('bfe_quiz_submitted');
-        location.reload();
+    pendingFilterChange = null; // No filter change, just a hard reset
+    document.getElementById('reset-msg').textContent = "Are you sure you want to restart? Your current progress will be lost.";
+    resetModal.classList.remove('hidden');
+});
+
+// Handle changing the Week Filter Dropdown
+weekFilter.addEventListener('change', (e) => {
+    pendingFilterChange = e.target.value;
+    document.getElementById('reset-msg').textContent = "Changing the filter will restart the quiz. Proceed?";
+    resetModal.classList.remove('hidden');
+});
+
+// Handle "Cancel" on Reset Modal
+document.getElementById('cancel-reset-btn').addEventListener('click', () => {
+    resetModal.classList.add('hidden');
+    // If they were trying to change the filter, snap it back to current
+    weekFilter.value = currentFilter;
+});
+
+// Handle "Yes, Restart" on Reset Modal
+document.getElementById('confirm-reset-btn').addEventListener('click', () => {
+    // If there is a pending filter change, apply it to localStorage
+    if (pendingFilterChange !== null) {
+        localStorage.setItem('bfe_quiz_filter', pendingFilterChange);
     }
+    
+    // Wipe memory
+    localStorage.removeItem('bfe_quiz_state');
+    localStorage.removeItem('bfe_quiz_submitted');
+    location.reload();
 });
 
 document.getElementById('restart-btn').addEventListener('click', () => {
