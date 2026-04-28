@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Fundamentals for Entrepreneurs</title>
+    <title>BFE Exam Prep - Enhanced</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,7 @@
         <div class="header-content">
             <h1>✨ Aritra Boom Boom Bokachoda Quiz</h1>
             <div class="header-actions">
+                <button id="stats-btn" class="btn secondary" style="padding: 10px 15px; font-size: 0.95rem;">📊 My Stats</button>
                 <select id="week-filter" class="custom-select">
                     <option value="all">All Weeks (1-12)</option>
                     <option value="1">Week 1</option>
@@ -33,7 +34,7 @@
                     <span id="attempted-count">0</span> / <span id="total-count">0</span> Attempted
                 </div>
                 <button id="force-restart-btn" class="btn outline">
-                    🔄 Reset & Randomize
+                    🔄 Reset
                 </button>
             </div>
         </div>
@@ -59,21 +60,34 @@
             <button id="submit-btn" class="btn submit-btn">🚀 Submit Quiz</button>
         </main>
 
-        <aside class="navigator-section card">
-            <h3>📍 Navigator</h3>
-            <div class="nav-legend">
-                <span class="legend-item">
-                    <span class="box current"></span> Current
-                </span>
-                <span class="legend-item">
-                    <span class="box attempted"></span> Attempted
-                </span>
-                <span class="legend-item">
-                    <span class="box unattempted"></span> Unattempted
-                </span>
+        <div class="right-sidebar">
+            <aside class="navigator-section card">
+                <h3>📍 Navigator</h3>
+                <div class="nav-legend">
+                    <span class="legend-item"><span class="box current"></span> Current</span>
+                    <span class="legend-item"><span class="box attempted"></span> Attempted</span>
+                    <span class="legend-item"><span class="box unattempted"></span> Unattempted</span>
+                </div>
+                <div id="nav-grid" class="nav-grid"></div>
+            </aside>
+
+            <aside class="leaderboard-section card">
+                <h3>🏆 Global Leaderboard</h3>
+                <div id="leaderboard-container">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Loading scores...</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="stats-modal" class="modal hidden">
+        <div class="modal-content card" style="max-width: 500px; text-align: left;">
+            <h2 style="text-align: center; margin-bottom: 5px;">📊 Performance Analytics</h2>
+            <div id="stats-container" style="margin-top: 10px;"></div>
+            <div class="modal-actions" style="margin-top: 30px;">
+                <button id="close-stats-btn" class="btn outline" style="width: 100%;">Close</button>
             </div>
-            <div id="nav-grid" class="nav-grid"></div>
-        </aside>
+        </div>
     </div>
 
     <div id="reset-modal" class="modal hidden">
@@ -96,13 +110,23 @@
                 <span id="score-points">0</span> / <span id="total-points">180</span>
             </div>
             <p id="score-percentage">0% Accuracy</p>
+            
+            <div id="leaderboard-submission-area" class="hidden" style="margin: 25px 0; padding: 20px; background: rgba(0,0,0,0.3); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                <p style="margin-bottom: 15px; font-size: 0.95rem; font-weight: 600; color: var(--primary-light);">🏆 Save your score to the Global Leaderboard!</p>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="player-name" placeholder="Enter nickname..." style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: white; outline: none;">
+                    <button id="post-score-btn" class="btn primary" style="padding: 10px 20px;">Post</button>
+                </div>
+                <p id="post-feedback" class="hidden" style="color: var(--secondary); font-size: 0.9rem; margin-top: 10px; font-weight: bold;">Score posted successfully!</p>
+            </div>
+
             <div class="modal-actions">
                 <button id="review-btn" class="btn secondary">📝 Review Answers</button>
-                <button id="restart-btn" class="btn primary">🔄 Restart Quiz</button>
+                <button id="restart-btn" class="btn outline">🔄 Restart Quiz</button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

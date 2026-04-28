@@ -1,3 +1,23 @@
+// --- 1. FIREBASE SETUP & IMPORTS ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDMwLeOI2D6Wd43kMHHU_4HUjM16atTRdo",
+    authDomain: "bfe-exam.firebaseapp.com",
+    projectId: "bfe-exam",
+    storageBucket: "bfe-exam.firebasestorage.app",
+    messagingSenderId: "246157239224",
+    appId: "1:246157239224:web:12532d565c6fbbeee9e54d",
+    measurementId: "G-W35MQNM54F"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+
+// --- 2. RAW QUESTION DATA ---
 const rawDataString = `
 [Assignment 1]
 1. Which of the following is an Indian-origin diversified business group that operates across multiple industries? a. Unilever b. Tata Group c. Amazon d. Microsoft | Ans: Tata Group
@@ -204,43 +224,31 @@ const rawDataString = `
 15. You are creating the 'Operational Plan' for a manufacturing company that manufactures high-quality laptops. Which of the following points will you include in this plan, based on your learning in the course? a. Staffing b. What will the company do after 2000 years? c. Supplier partnerships d. Daily Production | Ans: Staffing, Supplier partnerships, Daily Production
 `;
 
-// IMPROVED PARSING LOGIC with Week Filtering
+// --- 3. CORE LOGIC ---
 function parseData(rawData) {
-    // Split by "[Assignment X]"
     const blocks = rawData.split(/\[Assignment\s+(\d+)\]/i);
     let allParsed = [];
-    
-    // i=0 is empty space before first assignment. 
-    // i=1 is the week number, i=2 is the block of questions, etc.
     for (let i = 1; i < blocks.length; i += 2) {
         const weekNum = parseInt(blocks[i]);
         const weekText = blocks[i+1];
-        
         const lines = weekText.split('\n').filter(line => /^\d+\./.test(line.trim()));
         
         const parsedLines = lines.map((line, index) => {
             const [qPart, ansPart] = line.split(' | Ans: ');
-            
-            // Splits the string by finding " a. ", " b. ", " C. ", " D. " regardless of capitalization
             const parts = qPart.split(/(?:\s+|^)[a-e]\.\s+/i);
             const questionText = parts[0].substring(parts[0].indexOf('.') + 1).trim();
-            
             const options = [];
             for (let j = 1; j < parts.length; j++) {
                 const optText = parts[j].trim();
                 if (optText) options.push(optText);
             }
-
-            // Normalize text to prevent typos/spacing/casing issues from failing the match
             const safeAnsPart = (ansPart || "").toLowerCase().replace(/\s+/g, ' ');
-            
             const correctAnswers = options.filter(opt => {
                 const safeOpt = opt.toLowerCase().replace(/\s+/g, ' ');
                 return safeAnsPart.includes(safeOpt);
             });
-
             return {
-                id: `w${weekNum}_q${index + 1}`, // Unique ID tied to week and question number
+                id: `w${weekNum}_q${index + 1}`,
                 week: weekNum,
                 question: questionText,
                 options: options,
@@ -248,14 +256,11 @@ function parseData(rawData) {
                 type: correctAnswers.length > 1 ? 'multiple' : 'single'
             };
         });
-        
         allParsed = allParsed.concat(parsedLines);
     }
-    
     return allParsed;
 }
 
-// Utils: Fisher-Yates Shuffle
 function shuffleArray(array) {
     const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -265,14 +270,12 @@ function shuffleArray(array) {
     return arr;
 }
 
-// State variables
 let questions = [];
 let currentIndex = 0;
-let userAnswers = {}; // Format: { questionId: [selectedOptions] }
+let userAnswers = {};
 let reviewMode = false;
 let currentFilter = 'all';
 
-// DOM Elements
 const qNumberEl = document.getElementById('q-number');
 const qTypeEl = document.getElementById('q-type');
 const qTextEl = document.getElementById('question-text');
@@ -288,40 +291,30 @@ const resultModal = document.getElementById('result-modal');
 const resetModal = document.getElementById('reset-modal');
 const weekFilter = document.getElementById('week-filter');
 
-// Init
 function initQuiz() {
-    // 1. Check if the quiz was previously submitted
     const isSubmitted = localStorage.getItem('bfe_quiz_submitted');
     if (isSubmitted) {
         localStorage.removeItem('bfe_quiz_state');
         localStorage.removeItem('bfe_quiz_submitted');
     }
-
-    // 2. Load the preferred filter
     currentFilter = localStorage.getItem('bfe_quiz_filter') || 'all';
     weekFilter.value = currentFilter;
 
-    // 3. Load state or parse new randomized list
     const savedState = JSON.parse(localStorage.getItem('bfe_quiz_state'));
-    
     if (savedState && savedState.questions) {
         questions = savedState.questions;
         userAnswers = savedState.userAnswers || {};
     } else {
         const parsedQuestions = parseData(rawDataString);
         let filteredQuestions = parsedQuestions;
-        
-        // Apply week filter if one is selected
         if (currentFilter !== 'all') {
             const selectedWeek = parseInt(currentFilter);
             filteredQuestions = parsedQuestions.filter(q => q.week === selectedWeek);
         }
-
         questions = shuffleArray(filteredQuestions);
         questions.forEach(q => q.options = shuffleArray(q.options));
         saveState();
     }
-
     totalCountEl.textContent = questions.length;
     renderNavGrid();
     loadQuestion(0);
@@ -329,21 +322,16 @@ function initQuiz() {
 
 function saveState() {
     if(!reviewMode) {
-        localStorage.setItem('bfe_quiz_state', JSON.stringify({
-            questions,
-            userAnswers
-        }));
+        localStorage.setItem('bfe_quiz_state', JSON.stringify({ questions, userAnswers }));
     }
 }
 
 function updateProgress() {
     const attempted = Object.keys(userAnswers).filter(k => userAnswers[k].length > 0).length;
     attemptedCountEl.textContent = attempted;
-    
     document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
         btn.classList.remove('current');
         if(idx === currentIndex) btn.classList.add('current');
-        
         const qId = questions[idx].id;
         if(userAnswers[qId] && userAnswers[qId].length > 0) {
             btn.classList.add('attempted');
@@ -354,13 +342,11 @@ function updateProgress() {
 }
 
 function loadQuestion(index) {
-    if (questions.length === 0) return; // Edge case safeguard
-    
+    if (questions.length === 0) return;
     currentIndex = index;
     const q = questions[currentIndex];
     
-    // Updated header format: "Question 5 (Week 2)"
-    qNumberEl.textContent = `Question ${index + 1} (Week ${q.week})`;
+    qNumberEl.innerHTML = `Question ${index + 1} <span style="color:var(--text-muted);font-weight:500;">(Week ${q.week})</span>`;
     qTypeEl.textContent = q.type === 'multiple' ? 'Multiple Choice (MSQ)' : 'Single Choice';
     qTextEl.textContent = q.question;
     
@@ -392,20 +378,17 @@ function loadQuestion(index) {
                 label.classList.add('wrong');
             }
         }
-        
         optionsContainer.appendChild(label);
     });
 
     prevBtn.disabled = currentIndex === 0;
     nextBtn.disabled = currentIndex === questions.length - 1;
     clearBtn.disabled = reviewMode;
-    
     updateProgress();
 }
 
 function handleOptionChange(e, opt, q) {
     if (!userAnswers[q.id]) userAnswers[q.id] = [];
-    
     if (q.type === 'single') {
         userAnswers[q.id] = [opt];
         document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
@@ -423,14 +406,8 @@ function handleOptionChange(e, opt, q) {
     updateProgress();
 }
 
-prevBtn.addEventListener('click', () => {
-    if (currentIndex > 0) loadQuestion(currentIndex - 1);
-});
-
-nextBtn.addEventListener('click', () => {
-    if (currentIndex < questions.length - 1) loadQuestion(currentIndex + 1);
-});
-
+prevBtn.addEventListener('click', () => { if (currentIndex > 0) loadQuestion(currentIndex - 1); });
+nextBtn.addEventListener('click', () => { if (currentIndex < questions.length - 1) loadQuestion(currentIndex + 1); });
 clearBtn.addEventListener('click', () => {
     if (questions.length === 0) return;
     const qId = questions[currentIndex].id;
@@ -450,7 +427,9 @@ function renderNavGrid() {
     });
 }
 
-// PARTIAL SCORING LOGIC
+// --- 4. SUBMIT QUIZ & ANALYTICS STORAGE ---
+let scorePosted = false; // Flag to prevent multiple submissions to Firebase
+
 submitBtn.addEventListener('click', () => {
     if(reviewMode || questions.length === 0) return;
     
@@ -458,31 +437,184 @@ submitBtn.addEventListener('click', () => {
     questions.forEach(q => {
         const selected = userAnswers[q.id] || [];
         const correct = q.correctAnswers;
-        
         if (selected.length > 0 && correct.length > 0) {
-            // Check if the user selected any wrong options
             const hasWrongSelection = selected.some(val => !correct.includes(val));
-            
             if (!hasWrongSelection) {
-                // If no wrong options were selected, award partial or full points
-                const pointsEarned = selected.length / correct.length;
-                score += pointsEarned;
+                score += (selected.length / correct.length);
             }
         }
     });
 
-    // Round the score to 2 decimal places to keep it clean
-    score = Math.round(score * 100) / 100;
+    const pointsEarned = Math.round(score * 100) / 100;
+    const finalAccuracy = Math.round((pointsEarned / questions.length) * 100);
 
-    document.getElementById('score-points').textContent = score;
+    document.getElementById('score-points').textContent = pointsEarned;
     document.getElementById('total-points').textContent = questions.length;
-    document.getElementById('score-percentage').textContent = `${Math.round((score / questions.length) * 100)}% Accuracy`;
+    document.getElementById('score-percentage').textContent = `${finalAccuracy}% Accuracy`;
     
+    // Save to Personal Analytics History
+    let history = JSON.parse(localStorage.getItem('bfe_quiz_history')) || [];
+    history.push({
+        score: pointsEarned,
+        total: questions.length,
+        accuracy: finalAccuracy,
+        week: currentFilter,
+        date: new Date().getTime()
+    });
+    localStorage.setItem('bfe_quiz_history', JSON.stringify(history));
+
+    // Reset Leaderboard UI state for new completion
+    scorePosted = false;
+    document.getElementById('post-feedback').classList.add('hidden');
+    document.getElementById('player-name').value = '';
+    document.getElementById('post-score-btn').textContent = 'Post';
+    document.getElementById('post-score-btn').disabled = false;
+    
+    if(pointsEarned > 0) {
+        document.getElementById('leaderboard-submission-area').classList.remove('hidden');
+    } else {
+        document.getElementById('leaderboard-submission-area').classList.add('hidden');
+    }
+
     localStorage.setItem('bfe_quiz_submitted', 'true');
     resultModal.classList.remove('hidden');
 });
 
-// UPDATE REVIEW GRID FOR PARTIAL MARKS
+// --- 5. POST TO LEADERBOARD FIREBASE ---
+document.getElementById('post-score-btn').addEventListener('click', async () => {
+    if(scorePosted) return;
+    const name = document.getElementById('player-name').value.trim();
+    if(!name) return;
+    
+    const finalScore = parseFloat(document.getElementById('score-points').textContent);
+    const totalQ = parseInt(document.getElementById('total-points').textContent);
+    const btn = document.getElementById('post-score-btn');
+    
+    btn.textContent = 'Posting...';
+    btn.disabled = true;
+    
+    try {
+        await addDoc(collection(db, "leaderboard"), {
+            name: name,
+            score: finalScore,
+            total: totalQ,
+            filter: currentFilter,
+            timestamp: Date.now()
+        });
+        scorePosted = true;
+        document.getElementById('post-feedback').classList.remove('hidden');
+        btn.textContent = 'Posted!';
+        fetchLeaderboard(); // Refresh the board instantly
+    } catch (e) {
+        console.error(e);
+        btn.textContent = 'Post';
+        btn.disabled = false;
+        alert("Failed to post score. Check console for details.");
+    }
+});
+
+// --- 6. FETCH LEADERBOARD FIREBASE ---
+async function fetchLeaderboard() {
+    const container = document.getElementById('leaderboard-container');
+    try {
+        // Order by score descending, limit to Top 10
+        const q = query(collection(db, "leaderboard"), orderBy("score", "desc"), limit(10));
+        const querySnapshot = await getDocs(q);
+        
+        let html = '<ul class="leaderboard-list">';
+        let rank = 1;
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const tag = data.filter !== 'all' ? `<span style="font-size: 0.75rem; color: var(--text-muted);"> (W${data.filter})</span>` : '';
+            html += `
+                <li>
+                    <span class="rank">#${rank}</span>
+                    <span class="name">${data.name} ${tag}</span>
+                    <span class="score">${data.score}/${data.total}</span>
+                </li>
+            `;
+            rank++;
+        });
+        html += '</ul>';
+        
+        if(querySnapshot.empty) {
+            html = '<p style="color: var(--text-muted); font-size: 0.9rem;">No scores yet. Complete a quiz to be the first!</p>';
+        }
+        container.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p style="color: var(--error); font-size: 0.9rem;">Failed to load leaderboard.</p>';
+    }
+}
+
+// --- 7. PERSONAL ANALYTICS DASHBOARD ---
+document.getElementById('stats-btn').addEventListener('click', () => {
+    const history = JSON.parse(localStorage.getItem('bfe_quiz_history')) || [];
+    const container = document.getElementById('stats-container');
+
+    if(history.length === 0) {
+        container.innerHTML = "<p style='color: var(--text-muted); text-align: center; margin: 30px 0;'>No data yet. Complete a quiz to see your analytics!</p>";
+    } else {
+        const totalAcc = history.reduce((sum, h) => sum + h.accuracy, 0);
+        const avgAcc = (totalAcc / history.length).toFixed(1);
+
+        // Aggregate by week
+        const weekStats = {};
+        history.forEach(h => {
+            if (h.week !== 'all') {
+                if(!weekStats[h.week]) weekStats[h.week] = { sum: 0, count: 0 };
+                weekStats[h.week].sum += h.accuracy;
+                weekStats[h.week].count += 1;
+            }
+        });
+
+        let html = `
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h3 style="color: var(--primary); font-size: 2.5rem;">${avgAcc}%</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Average Accuracy across ${history.length} attempts</p>
+            </div>
+        `;
+
+        if(Object.keys(weekStats).length > 0) {
+            html += `<h4 style="margin-bottom: 20px; color: var(--text-main);">Performance by Module</h4>`;
+            for(let w=1; w<=12; w++) {
+                if(weekStats[w]) {
+                    const wAvg = (weekStats[w].sum / weekStats[w].count).toFixed(1);
+                    const barColor = wAvg >= 80 ? 'var(--secondary)' : (wAvg >= 50 ? 'var(--accent)' : 'var(--error)');
+                    
+                    html += `
+                        <div class="stat-row">
+                            <div class="stat-label">Week ${w}</div>
+                            <div class="stat-bar-bg">
+                                <div class="stat-bar-fill" style="width: ${wAvg}%; background: ${barColor};"></div>
+                            </div>
+                            <div class="stat-value" style="color: ${barColor}">${wAvg}%</div>
+                        </div>
+                    `;
+                }
+            }
+        } else {
+            html += `<p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Take some module-specific quizzes (using the Week filter) to unlock weak-point tracking!</p>`;
+        }
+
+        html += `
+            <div class="prediction-box">
+                <h4 style="color: var(--secondary); margin-bottom: 5px;">🎯 Predicted Exam Score</h4>
+                <p style="font-size: 1.8rem; font-weight: bold; color: white;">${Math.round((avgAcc / 100) * 180)} <span style="font-size: 1rem; color: var(--text-muted);">/ 180</span></p>
+                <p style="font-size: 0.85rem; opacity: 0.8; color: var(--text-muted); margin-top: 5px;">Based on your historical performance.</p>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+    document.getElementById('stats-modal').classList.remove('hidden');
+});
+
+document.getElementById('close-stats-btn').addEventListener('click', () => {
+    document.getElementById('stats-modal').classList.add('hidden');
+});
+
+// --- 8. REVIEW & RESET FLOWS ---
 document.getElementById('review-btn').addEventListener('click', () => {
     reviewMode = true;
     resultModal.classList.add('hidden');
@@ -491,76 +623,56 @@ document.getElementById('review-btn').addEventListener('click', () => {
     document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
         const q = questions[idx];
         const selected = userAnswers[q.id] || [];
-        
-        let isCorrect = false;
-        let isPartial = false;
-        let isWrong = false;
+        let isCorrect = false, isPartial = false, isWrong = false;
 
         if(selected.length > 0 && q.correctAnswers.length > 0) {
             const hasWrongSelection = selected.some(val => !q.correctAnswers.includes(val));
-            
             if (hasWrongSelection) {
-                isWrong = true; // Any wrong option = 0 points
+                isWrong = true; 
             } else if (selected.length === q.correctAnswers.length) {
-                isCorrect = true; // Perfect match = Full points
+                isCorrect = true; 
             } else {
-                isPartial = true; // Only correct options, but missed some = Partial points
+                isPartial = true; 
             }
         }
         
         btn.classList.remove('attempted');
-        if (isCorrect) {
-            btn.classList.add('review-correct');
-        } else if (isPartial) {
-            btn.classList.add('review-partial');
-        } else if (isWrong) {
-            btn.classList.add('review-wrong');
-        }
+        if (isCorrect) btn.classList.add('review-correct');
+        else if (isPartial) btn.classList.add('review-partial');
+        else if (isWrong) btn.classList.add('review-wrong');
     });
     
     loadQuestion(0);
 });
 
-// MODAL & FILTER LOGIC
 let pendingFilterChange = null;
 
-// Handle the "Reset & Randomize" Button
 document.getElementById('force-restart-btn')?.addEventListener('click', () => {
-    pendingFilterChange = null; // No filter change, just a hard reset
+    pendingFilterChange = null; 
     document.getElementById('reset-msg').textContent = "Are you sure you want to restart? Your current progress will be lost.";
     resetModal.classList.remove('hidden');
 });
 
-// Handle changing the Week Filter Dropdown
 weekFilter.addEventListener('change', (e) => {
     pendingFilterChange = e.target.value;
     document.getElementById('reset-msg').textContent = "Changing the filter will restart the quiz. Proceed?";
     resetModal.classList.remove('hidden');
 });
 
-// Handle "Cancel" on Reset Modal
 document.getElementById('cancel-reset-btn').addEventListener('click', () => {
     resetModal.classList.add('hidden');
-    // If they were trying to change the filter, snap it back to current
     weekFilter.value = currentFilter;
 });
 
-// Handle "Yes, Restart" on Reset Modal
 document.getElementById('confirm-reset-btn').addEventListener('click', () => {
-    // If there is a pending filter change, apply it to localStorage
-    if (pendingFilterChange !== null) {
-        localStorage.setItem('bfe_quiz_filter', pendingFilterChange);
-    }
-    
-    // Wipe memory
+    if (pendingFilterChange !== null) localStorage.setItem('bfe_quiz_filter', pendingFilterChange);
     localStorage.removeItem('bfe_quiz_state');
     localStorage.removeItem('bfe_quiz_submitted');
     location.reload();
 });
 
-document.getElementById('restart-btn').addEventListener('click', () => {
-    location.reload();
-});
+document.getElementById('restart-btn').addEventListener('click', () => location.reload());
 
-// Start the app
+// Run
+fetchLeaderboard();
 initQuiz();
