@@ -1,4 +1,3 @@
-// --- 1. FIREBASE SETUP & IMPORTS ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
@@ -17,7 +16,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
-// --- 2. RAW QUESTION DATA ---
+// >> PASTE YOUR ENTIRE 180 QUESTION STRING HERE <<
 const rawDataString = `
 [Assignment 0]
 1. What is a 'Startup'? a. An early-stage, innovative company designed to develop and validate a scalable business model for a market need. b. Any business, regardless of its stage or growth. c. A company that should never aim for scalability. d. A successful startup need not address any market need. | Ans: An early-stage, innovative company designed to develop and validate a scalable business model for a market need.
@@ -117,7 +116,7 @@ const rawDataString = `
 [Assignment 5]
 1. Which of the following statements most accurately explains market research as covered in the course? a. Market research focuses only on analysing customer feedback b. Market research excludes technology and product-related studies c. Market research involves a structured analysis of markets, customers, competitors, products, and technological trends d. Market research is limited to studying past sales performance | Ans: Market research involves a structured analysis of markets, customers, competitors, products, and technological trends
 2. You have joined an agritech startup that provides drone-based services to large farms. You are asked to design a comprehensive market research plan. Which of the following elements should be included in your plan? a. Market share of existing competitors in the same operating region b. Features and service offerings of newly launched competing drone startups c. Monthly volume of drone services or units sold by competitors d. Interior design plans of competitor offices | Ans: Market share of existing competitors in the same operating region, Features and service offerings of newly launched competing drone startups, Monthly volume of drone services or units sold by competitors
-3. You are interviewing candidates for a marketing intern role to strengthen market research for your mobile application. Which candidate responses reflect a correct understanding of market research? a. Candidate 1 - Analyzing how customers purchase helps optimize marketing channels b. Candidate 2 - Understanding pricing sensitivity helps determine pricing strategies c. Candidate 3 - Focusing only on current customers is sufficient d. Candidate 4 - Studying competitor acquisition strategies is irrelevant | Ans: Candidate 1 - Analyzing how customers purchase helps optimize marketing channels, Candidate 2 - Understanding pricing sensitivity helps determine pricing strategies
+3. You are interviewing candidates for a marketing intern role to strengthen market research for your mobile application. Which candidate responses reflect a correct understanding of market research? a. Candidate 1 - Analyzing how customers purchase helps optimise marketing channels b. Candidate 2 - Understanding pricing sensitivity helps determine pricing strategies c. Candidate 3 - Focusing only on current customers is sufficient d. Candidate 4 - Studying competitor acquisition strategies is irrelevant | Ans: Candidate 1 - Analyzing how customers purchase helps optimize marketing channels, Candidate 2 - Understanding pricing sensitivity helps determine pricing strategies
 4. A beginner learner lists some sources of market research. Which statements are correct? a. Publicly available databases can be used for secondary research b. Observing customers is not research c. Al-assisted online searches can support secondary research d. Field observation is irrelevant | Ans: Publicly available databases can be used for secondary research, Al-assisted online searches can support secondary research
 5. Which statement correctly describes the usefulness of Google Trends for entrepreneurs? a. It predicts exact future revenue b. It is usable only by data scientists c. It helps identify public interest patterns over time d. It replaces all primary research | Ans: It helps identify public interest patterns over time
 6. Which of the following statements about the 'Gartner's Hype Cycle for Emerging Technology' discussed in the course are correct? a. 'Expectations' are shown on the Y-axis b. No technology reaches the 'peak of inflated expectations' c. All technologies fail permanently d. 'Time' is shown on the X-axis | Ans: 'Expectations' are shown on the Y-axis, 'Time' is shown on the X-axis
@@ -178,7 +177,7 @@ const rawDataString = `
 10. Match the supply chain type with its correct attributes as discussed in the course. a. On-demand supply chain - High lead time and unpredictable demand b. Express supply chain - Low lead time and unpredictable demand c. Flow supply chain - Unpredictable demand and high lead time d. Lean supply chain - High lead time and unpredictable demand | Ans: On-demand supply chain - High lead time and unpredictable demand, Express supply chain - Low lead time and unpredictable demand
 11. You are designing a customer loyalty measurement framework for an organization. Which metrics should be included? a. Customer satisfaction indicators b. Revenue contribution and profitability c. Share of wallet and market penetration d. Brand logo design | Ans: Customer satisfaction indicators, Revenue contribution and profitability, Share of wallet and market penetration
 12. Which of the following are key elements of effective customer service systems discussed in the course? a. Structured service quality management processes b. Clear mechanisms for complaint handling and resolution c. Absence of escalation procedures d. Ignoring contractual and compliance requirements | Ans: Structured service quality management processes, Clear mechanisms for complaint handling and resolution
-13. Which statements correctly describe supply chain planning activities? a. Demand forecasting is a critical planning input b. Production planning plays no role in supply chain decisions c. Warehouse and transport planning are important planning components d. Raw material planning is irrelevant | Ans: Demand forecasting is a critical planning input, Warehouse and transport planning are important planning components
+13. Which statements correctly describe supply chain planning activities? a. Demand forecasting is a critical planning input b. Production planning plays no role in supply chain decisions c. Warehouse and transport planning are important planning components d. Raw material planning is irrelevant | Ans: Demand forecasting is a critical planning input, Warehouse and transport planning are important components
 14. For a company manufacturing and selling soft drinks, which actions help optimize the supply chain? a. Transport route optimization b. Product and packaging optimization c. Ignoring warehouse utilization d. Eliminating workforce planning | Ans: Transport route optimization, Product and packaging optimization
 15. While designing a training program on basic supply chain skills for employees, which topics should be included? a. Demand forecasting fundamentals b. Warehouse management practices c. Office interior aesthetics d. Advanced abstract mathematics | Ans: Demand forecasting fundamentals, Warehouse management practices
 
@@ -251,36 +250,23 @@ const rawDataString = `
 15. You are creating the 'Operational Plan' for a manufacturing company that manufactures high-quality laptops. Which of the following points will you include in this plan, based on your learning in the course? a. Staffing b. What will the company do after 2000 years? c. Supplier partnerships d. Daily Production | Ans: Staffing, Supplier partnerships, Daily Production
 `;
 
-// --- 3. CORE LOGIC ---
 function parseData(rawData) {
     const blocks = rawData.split(/\[Assignment\s+(\d+)\]/i);
     let allParsed = [];
     for (let i = 1; i < blocks.length; i += 2) {
         const weekNum = parseInt(blocks[i]);
-        const weekText = blocks[i+1];
-        const lines = weekText.split('\n').filter(line => /^\d+\./.test(line.trim()));
-        
+        const lines = blocks[i+1].split('\n').filter(line => /^\d+\./.test(line.trim()));
         const parsedLines = lines.map((line, index) => {
             const [qPart, ansPart] = line.split(' | Ans: ');
             const parts = qPart.split(/(?:\s+|^)[a-e]\.\s+/i);
             const questionText = parts[0].substring(parts[0].indexOf('.') + 1).trim();
             const options = [];
-            for (let j = 1; j < parts.length; j++) {
-                const optText = parts[j].trim();
-                if (optText) options.push(optText);
-            }
+            for (let j = 1; j < parts.length; j++) if (parts[j].trim()) options.push(parts[j].trim());
             const safeAnsPart = (ansPart || "").toLowerCase().replace(/\s+/g, ' ');
-            const correctAnswers = options.filter(opt => {
-                const safeOpt = opt.toLowerCase().replace(/\s+/g, ' ');
-                return safeAnsPart.includes(safeOpt);
-            });
+            const correctAnswers = options.filter(opt => safeAnsPart.includes(opt.toLowerCase().replace(/\s+/g, ' ')));
             return {
-                id: `w${weekNum}_q${index + 1}`,
-                week: weekNum,
-                question: questionText,
-                options: options,
-                correctAnswers: correctAnswers,
-                type: correctAnswers.length > 1 ? 'multiple' : 'single'
+                id: `w${weekNum}_q${index + 1}`, week: weekNum, question: questionText,
+                options: options, correctAnswers: correctAnswers, type: correctAnswers.length > 1 ? 'multiple' : 'single'
             };
         });
         allParsed = allParsed.concat(parsedLines);
@@ -297,30 +283,22 @@ function shuffleArray(array) {
     return arr;
 }
 
-const TOTAL_WEEKS = 13; // 0 through 12
-let questions = [];
-let currentIndex = 0;
-let userAnswers = {};
-let reviewMode = false;
+const TOTAL_WEEKS = 13; 
+let questions = [], currentIndex = 0, userAnswers = {}, reviewMode = false;
 let currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
 
-// DOM Elements
-const qNumberEl = document.getElementById('q-number');
-const qTypeEl = document.getElementById('q-type');
-const qTextEl = document.getElementById('question-text');
-const optionsContainer = document.getElementById('options-container');
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-const clearBtn = document.getElementById('clear-btn');
-const navGrid = document.getElementById('nav-grid');
-const submitBtn = document.getElementById('submit-btn');
-const attemptedCountEl = document.getElementById('attempted-count');
-const totalCountEl = document.getElementById('total-count');
-const resultModal = document.getElementById('result-modal');
-const resetModal = document.getElementById('reset-modal');
-const filterBtn = document.getElementById('filter-btn');
+const DOM = {
+    qNum: document.getElementById('q-number'), qType: document.getElementById('q-type'),
+    qText: document.getElementById('question-text'), opts: document.getElementById('options-container'),
+    prev: document.getElementById('prev-btn'), next: document.getElementById('next-btn'),
+    clear: document.getElementById('clear-btn'), grid: document.getElementById('nav-grid'),
+    submit: document.getElementById('submit-btn'), att: document.getElementById('attempted-count'),
+    tot: document.getElementById('total-count'), filterBtn: document.getElementById('filter-btn'),
+    resultModal: document.getElementById('result-modal'), resetModal: document.getElementById('reset-modal'),
+    statsModal: document.getElementById('stats-modal'), filterModal: document.getElementById('filter-modal')
+};
 
-// Inject Checkboxes for Filter Modal
+// Filter UI Setup
 const weekCbContainer = document.getElementById('week-cb-container');
 for(let i=0; i<TOTAL_WEEKS; i++) {
     const lbl = document.createElement('label');
@@ -332,15 +310,10 @@ const weekCbs = document.querySelectorAll('.week-cb');
 const filterAllCb = document.getElementById('filter-all');
 
 function updateFilterBtnUI() {
-    if (currentFilter.length === TOTAL_WEEKS) {
-        filterBtn.innerHTML = `📚 All Modules (0-12) ▼`;
-    } else if (currentFilter.length === 0) {
-        filterBtn.innerHTML = `📚 None Selected ▼`;
-    } else if (currentFilter.length <= 3) {
-        filterBtn.innerHTML = `📚 Weeks: ${currentFilter.join(', ')} ▼`;
-    } else {
-        filterBtn.innerHTML = `📚 ${currentFilter.length} Modules ▼`;
-    }
+    if (currentFilter.length === TOTAL_WEEKS) DOM.filterBtn.innerHTML = `📚 All Modules (0-12) ▼`;
+    else if (currentFilter.length === 0) DOM.filterBtn.innerHTML = `📚 None Selected ▼`;
+    else if (currentFilter.length <= 3) DOM.filterBtn.innerHTML = `📚 Weeks: ${currentFilter.join(', ')} ▼`;
+    else DOM.filterBtn.innerHTML = `📚 ${currentFilter.length} Modules ▼`;
 }
 
 function initQuiz() {
@@ -350,21 +323,13 @@ function initQuiz() {
         localStorage.removeItem('bfe_quiz_submitted');
     }
     
-    // Load Multi-Filter with Safety Check
     const storedFilter = localStorage.getItem('bfe_quiz_filter');
     if(storedFilter) {
         try {
             currentFilter = JSON.parse(storedFilter);
-            // FIX: If the old version saved a number/string instead of an Array, reset it to prevent crashing.
-            if (!Array.isArray(currentFilter)) {
-                currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
-            }
-        } catch(e) {
-            currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
-        }
-    } else {
-        currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
-    }
+            if (!Array.isArray(currentFilter)) currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i);
+        } catch(e) { currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i); }
+    } else { currentFilter = Array.from({length: TOTAL_WEEKS}, (_, i) => i); }
     updateFilterBtnUI();
 
     const savedState = JSON.parse(localStorage.getItem('bfe_quiz_state'));
@@ -372,57 +337,47 @@ function initQuiz() {
         questions = savedState.questions;
         userAnswers = savedState.userAnswers || {};
     } else {
-        const parsedQuestions = parseData(rawDataString);
-        // Filter based on active array
-        let filteredQuestions = parsedQuestions.filter(q => currentFilter.includes(q.week));
-        
+        let filteredQuestions = parseData(rawDataString).filter(q => currentFilter.includes(q.week));
         questions = shuffleArray(filteredQuestions);
         questions.forEach(q => q.options = shuffleArray(q.options));
         saveState();
     }
-    
-    totalCountEl.textContent = questions.length;
+    DOM.tot.textContent = questions.length;
     renderNavGrid();
     loadQuestion(0);
 }
 
 function saveState() {
-    if(!reviewMode) {
-        localStorage.setItem('bfe_quiz_state', JSON.stringify({ questions, userAnswers }));
-    }
+    if(!reviewMode) localStorage.setItem('bfe_quiz_state', JSON.stringify({ questions, userAnswers }));
 }
 
 function updateProgress() {
     const attempted = Object.keys(userAnswers).filter(k => userAnswers[k].length > 0).length;
-    attemptedCountEl.textContent = attempted;
+    DOM.att.textContent = attempted;
     document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
         btn.classList.remove('current');
         if(idx === currentIndex) btn.classList.add('current');
-        const qId = questions[idx].id;
-        if(userAnswers[qId] && userAnswers[qId].length > 0) {
-            btn.classList.add('attempted');
-        } else {
-            btn.classList.remove('attempted');
-        }
+        if(userAnswers[questions[idx].id] && userAnswers[questions[idx].id].length > 0) btn.classList.add('attempted');
+        else btn.classList.remove('attempted');
     });
 }
 
 function loadQuestion(index) {
     if (questions.length === 0) {
-        qTextEl.textContent = "No modules selected! Please adjust your filter.";
+        DOM.qText.textContent = "No modules selected! Please adjust your filter.";
         return;
     }
     currentIndex = index;
     const q = questions[currentIndex];
     
-    qNumberEl.innerHTML = `Question ${index + 1} <span style="color:var(--text-muted);font-weight:500;">(Week ${q.week})</span>`;
-    qTypeEl.textContent = q.type === 'multiple' ? 'Multiple Choice (MSQ)' : 'Single Choice';
-    qTextEl.textContent = q.question;
+    DOM.qNum.innerHTML = `Question ${index + 1} <span style="color:var(--text-muted);font-weight:500;">(Week ${q.week})</span>`;
+    DOM.qType.textContent = q.type === 'multiple' ? 'Multiple Choice (MSQ)' : 'Single Choice';
+    DOM.qText.textContent = q.question;
     
-    optionsContainer.innerHTML = '';
+    DOM.opts.innerHTML = '';
     const selected = userAnswers[q.id] || [];
 
-    q.options.forEach((opt, idx) => {
+    q.options.forEach(opt => {
         const label = document.createElement('label');
         label.className = `option-label ${selected.includes(opt) ? 'selected' : ''}`;
         
@@ -434,87 +389,68 @@ function loadQuestion(index) {
         if (reviewMode) input.disabled = true;
 
         if (!reviewMode) {
-            input.addEventListener('change', (e) => handleOptionChange(e, opt, q));
+            input.addEventListener('change', (e) => {
+                if (!userAnswers[q.id]) userAnswers[q.id] = [];
+                if (q.type === 'single') {
+                    userAnswers[q.id] = [opt];
+                    document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+                    e.target.parentElement.classList.add('selected');
+                } else {
+                    if (e.target.checked) { userAnswers[q.id].push(opt); e.target.parentElement.classList.add('selected'); } 
+                    else { userAnswers[q.id] = userAnswers[q.id].filter(ans => ans !== opt); e.target.parentElement.classList.remove('selected'); }
+                }
+                saveState(); updateProgress();
+            });
         }
-
         label.appendChild(input);
         label.appendChild(document.createTextNode(opt));
         
         if (reviewMode) {
-            if (q.correctAnswers.includes(opt)) {
-                label.classList.add('correct');
-            } else if (selected.includes(opt)) {
-                label.classList.add('wrong');
-            }
+            if (q.correctAnswers.includes(opt)) label.classList.add('correct');
+            else if (selected.includes(opt)) label.classList.add('wrong');
         }
-        optionsContainer.appendChild(label);
+        DOM.opts.appendChild(label);
     });
 
-    prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = currentIndex === questions.length - 1;
-    clearBtn.disabled = reviewMode;
+    DOM.prev.disabled = currentIndex === 0;
+    DOM.next.disabled = currentIndex === questions.length - 1;
+    DOM.clear.disabled = reviewMode;
     updateProgress();
 }
 
-function handleOptionChange(e, opt, q) {
-    if (!userAnswers[q.id]) userAnswers[q.id] = [];
-    if (q.type === 'single') {
-        userAnswers[q.id] = [opt];
-        document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
-        e.target.parentElement.classList.add('selected');
-    } else {
-        if (e.target.checked) {
-            userAnswers[q.id].push(opt);
-            e.target.parentElement.classList.add('selected');
-        } else {
-            userAnswers[q.id] = userAnswers[q.id].filter(ans => ans !== opt);
-            e.target.parentElement.classList.remove('selected');
-        }
-    }
-    saveState();
-    updateProgress();
-}
-
-prevBtn.addEventListener('click', () => { if (currentIndex > 0) loadQuestion(currentIndex - 1); });
-nextBtn.addEventListener('click', () => { if (currentIndex < questions.length - 1) loadQuestion(currentIndex + 1); });
-clearBtn.addEventListener('click', () => {
+DOM.prev.addEventListener('click', () => { if (currentIndex > 0) loadQuestion(currentIndex - 1); });
+DOM.next.addEventListener('click', () => { if (currentIndex < questions.length - 1) loadQuestion(currentIndex + 1); });
+DOM.clear.addEventListener('click', () => {
     if (questions.length === 0) return;
-    const qId = questions[currentIndex].id;
-    userAnswers[qId] = [];
-    saveState();
-    loadQuestion(currentIndex);
+    userAnswers[questions[currentIndex].id] = [];
+    saveState(); loadQuestion(currentIndex);
 });
 
 function renderNavGrid() {
-    navGrid.innerHTML = '';
+    DOM.grid.innerHTML = '';
     questions.forEach((q, idx) => {
         const btn = document.createElement('button');
         btn.className = 'nav-btn';
         btn.textContent = idx + 1;
         btn.addEventListener('click', () => loadQuestion(idx));
-        navGrid.appendChild(btn);
+        DOM.grid.appendChild(btn);
     });
 }
 
-// --- 4. SUBMIT QUIZ & ADVANCED ANALYTICS STORAGE ---
+// Submitting & Scoring
 let scorePosted = false;
-
-submitBtn.addEventListener('click', () => {
+DOM.submit.addEventListener('click', () => {
     if(reviewMode || questions.length === 0) return;
     
-    let score = 0;
-    let weekStatsThisSession = {}; 
-    
+    let score = 0; let weekStatsThisSession = {}; 
     questions.forEach(q => {
         const selected = userAnswers[q.id] || [];
         const correct = q.correctAnswers;
-        
         if(!weekStatsThisSession[q.week]) weekStatsThisSession[q.week] = { earned: 0, count: 0 };
         weekStatsThisSession[q.week].count += 1;
 
         if (selected.length > 0 && correct.length > 0) {
-            const hasWrongSelection = selected.some(val => !correct.includes(val));
-            if (!hasWrongSelection) {
+            if (!selected.some(val => !correct.includes(val))) {
                 const pointsEarned = selected.length / correct.length;
                 score += pointsEarned;
                 weekStatsThisSession[q.week].earned += pointsEarned;
@@ -530,108 +466,91 @@ submitBtn.addEventListener('click', () => {
     document.getElementById('score-percentage').textContent = `${finalAccuracy}% Accuracy`;
     
     const filterString = currentFilter.length === TOTAL_WEEKS ? 'all' : currentFilter.sort((a,b)=>a-b).join(',');
-
-    // Save Advanced Personal Analytics History
     let history = JSON.parse(localStorage.getItem('bfe_quiz_history')) || [];
-    history.push({
-        score: pointsEarned,
-        total: questions.length,
-        accuracy: finalAccuracy,
-        filterTag: filterString, 
-        weekBreakdown: weekStatsThisSession, // Store deep accuracy for each module taken!
-        date: new Date().getTime()
-    });
+    history.push({ score: pointsEarned, total: questions.length, accuracy: finalAccuracy, filterTag: filterString, weekBreakdown: weekStatsThisSession, date: new Date().getTime() });
     localStorage.setItem('bfe_quiz_history', JSON.stringify(history));
 
-    // Reset Leaderboard UI state
     scorePosted = false;
     document.getElementById('post-feedback').classList.add('hidden');
     document.getElementById('player-name').value = '';
     document.getElementById('post-score-btn').textContent = 'Post';
     document.getElementById('post-score-btn').disabled = false;
     
-    if(pointsEarned > 0) {
-        document.getElementById('leaderboard-submission-area').classList.remove('hidden');
-    } else {
-        document.getElementById('leaderboard-submission-area').classList.add('hidden');
-    }
+    if(pointsEarned > 0) document.getElementById('leaderboard-submission-area').classList.remove('hidden');
+    else document.getElementById('leaderboard-submission-area').classList.add('hidden');
 
     localStorage.setItem('bfe_quiz_submitted', 'true');
-    resultModal.classList.remove('hidden');
+    DOM.resultModal.classList.remove('hidden');
 });
 
-// --- 5. POST TO LEADERBOARD FIREBASE ---
+// Firebase Leaderboard
 document.getElementById('post-score-btn').addEventListener('click', async () => {
     if(scorePosted) return;
     const name = document.getElementById('player-name').value.trim();
     if(!name) return;
-    
     const finalScore = parseFloat(document.getElementById('score-points').textContent);
     const totalQ = parseInt(document.getElementById('total-points').textContent);
     const filterString = currentFilter.length === TOTAL_WEEKS ? 'all' : currentFilter.sort((a,b)=>a-b).join(',');
     const btn = document.getElementById('post-score-btn');
     
-    btn.textContent = 'Posting...';
-    btn.disabled = true;
-    
+    btn.textContent = 'Posting...'; btn.disabled = true;
     try {
-        await addDoc(collection(db, "leaderboard"), {
-            name: name,
-            score: finalScore,
-            total: totalQ,
-            filter: filterString,
-            timestamp: Date.now()
-        });
+        await addDoc(collection(db, "leaderboard"), { name: name, score: finalScore, total: totalQ, filter: filterString, timestamp: Date.now() });
         scorePosted = true;
         document.getElementById('post-feedback').classList.remove('hidden');
         btn.textContent = 'Posted!';
         fetchLeaderboard();
     } catch (e) {
-        console.error(e);
-        btn.textContent = 'Post';
-        btn.disabled = false;
-        alert("Failed to post score. Check console for details.");
+        console.error(e); btn.textContent = 'Post'; btn.disabled = false;
+        alert("Failed to post score.");
     }
 });
 
-// --- 6. FETCH LEADERBOARD FIREBASE ---
 async function fetchLeaderboard() {
     const container = document.getElementById('leaderboard-container');
     try {
         const q = query(collection(db, "leaderboard"), orderBy("score", "desc"), limit(10));
         const querySnapshot = await getDocs(q);
-        
-        let html = '<ul class="leaderboard-list">';
-        let rank = 1;
+        let html = '<ul class="leaderboard-list">'; let rank = 1;
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            // Truncate filter string if it's too long
             let tagStr = data.filter;
             if(tagStr !== 'all' && tagStr.length > 8) tagStr = tagStr.substring(0, 8) + '...';
-            
             const tag = data.filter !== 'all' ? `<span style="font-size: 0.75rem; color: var(--text-muted);"> (W: ${tagStr})</span>` : '';
-            html += `
-                <li>
-                    <span class="rank">#${rank}</span>
-                    <span class="name">${data.name} ${tag}</span>
-                    <span class="score">${data.score}/${data.total}</span>
-                </li>
-            `;
+            html += `<li><span class="rank">#${rank}</span><span class="name">${data.name} ${tag}</span><span class="score">${data.score}/${data.total}</span></li>`;
             rank++;
         });
         html += '</ul>';
-        
-        if(querySnapshot.empty) {
-            html = '<p style="color: var(--text-muted); font-size: 0.9rem;">No scores yet. Complete a quiz to be the first!</p>';
-        }
+        if(querySnapshot.empty) html = '<p style="color: var(--text-muted); font-size: 0.9rem;">No scores yet.</p>';
         container.innerHTML = html;
-    } catch (e) {
-        console.error(e);
-        container.innerHTML = '<p style="color: var(--error); font-size: 0.9rem;">Failed to load leaderboard.</p>';
-    }
+    } catch (e) { container.innerHTML = '<p style="color: var(--error);">Failed to load leaderboard.</p>'; }
 }
 
-// --- 7. ADVANCED PERSONAL ANALYTICS DASHBOARD ---
+// Review Mode
+document.getElementById('review-btn').addEventListener('click', () => {
+    reviewMode = true;
+    DOM.resultModal.classList.add('hidden');
+    DOM.submit.style.display = 'none';
+    
+    document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+        const q = questions[idx];
+        const selected = userAnswers[q.id] || [];
+        let isCorrect = false, isPartial = false, isWrong = false;
+
+        if(selected.length > 0 && q.correctAnswers.length > 0) {
+            if (selected.some(val => !q.correctAnswers.includes(val))) isWrong = true; 
+            else if (selected.length === q.correctAnswers.length) isCorrect = true; 
+            else isPartial = true; 
+        }
+        btn.classList.remove('attempted');
+        if (isCorrect) btn.classList.add('review-correct');
+        else if (isPartial) btn.classList.add('review-partial');
+        else if (isWrong) btn.classList.add('review-wrong');
+    });
+    loadQuestion(0);
+});
+
+// Advanced Stats Dashboard
 document.getElementById('stats-btn').addEventListener('click', () => {
     const history = JSON.parse(localStorage.getItem('bfe_quiz_history')) || [];
     const container = document.getElementById('stats-container');
@@ -639,13 +558,9 @@ document.getElementById('stats-btn').addEventListener('click', () => {
     if(history.length === 0) {
         container.innerHTML = "<p style='color: var(--text-muted); text-align: center; margin: 30px 0;'>No data yet. Complete a quiz to see your analytics!</p>";
     } else {
-        const totalAcc = history.reduce((sum, h) => sum + h.accuracy, 0);
-        const avgAcc = (totalAcc / history.length).toFixed(1);
-
-        // Aggregate deep accuracy by individual week across all historical sessions
+        const avgAcc = (history.reduce((sum, h) => sum + h.accuracy, 0) / history.length).toFixed(1);
         const globalWeekStats = {};
         for(let i=0; i<TOTAL_WEEKS; i++) globalWeekStats[i] = { earned: 0, count: 0 };
-
         history.forEach(h => {
             if(h.weekBreakdown) {
                 for(let w in h.weekBreakdown) {
@@ -655,154 +570,67 @@ document.getElementById('stats-btn').addEventListener('click', () => {
             }
         });
 
-        let html = `
-            <div style="text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
-                <h3 style="color: var(--primary); font-size: 2.5rem;">${avgAcc}%</h3>
-                <p style="color: var(--text-muted); font-size: 0.95rem;">Average Accuracy across ${history.length} attempts</p>
-            </div>
-        `;
-
+        let html = `<div style="text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px;"><h3 style="color: var(--primary); font-size: 2.5rem;">${avgAcc}%</h3><p style="color: var(--text-muted); font-size: 0.95rem;">Average Accuracy across ${history.length} attempts</p></div>`;
         html += `<h4 style="margin-bottom: 20px; color: var(--text-main);">Module Mastery (Deep Accuracy)</h4>`;
-        let hasModuleData = false;
         
+        let hasModuleData = false;
         for(let w=0; w<TOTAL_WEEKS; w++) {
             if(globalWeekStats[w].count > 0) {
                 hasModuleData = true;
                 const wAcc = Math.round((globalWeekStats[w].earned / globalWeekStats[w].count) * 100);
                 const barColor = wAcc >= 80 ? 'var(--secondary)' : (wAcc >= 50 ? 'var(--accent)' : 'var(--error)');
-                
-                html += `
-                    <div class="stat-row">
-                        <div class="stat-label">Week ${w}</div>
-                        <div class="stat-bar-bg">
-                            <div class="stat-bar-fill" style="width: ${wAcc}%; background: ${barColor};"></div>
-                        </div>
-                        <div class="stat-value" style="color: ${barColor}">${wAcc}%</div>
-                    </div>
-                `;
+                html += `<div class="stat-row"><div class="stat-label">Week ${w}</div><div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${wAcc}%; background: ${barColor};"></div></div><div class="stat-value" style="color: ${barColor}">${wAcc}%</div></div>`;
             }
         }
+        if(!hasModuleData) html += `<p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Complete quizzes to generate module mastery data.</p>`;
         
-        if(!hasModuleData) {
-            html += `<p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Complete quizzes to generate module mastery data.</p>`;
-        }
-
-        html += `
-            <div class="prediction-box">
-                <h4 style="color: var(--secondary); margin-bottom: 5px;">🎯 Predicted Final Exam Score</h4>
-                <p style="font-size: 1.8rem; font-weight: bold; color: white;">${Math.round((avgAcc / 100) * 180)} <span style="font-size: 1rem; color: var(--text-muted);">/ 180</span></p>
-                <p style="font-size: 0.85rem; opacity: 0.8; color: var(--text-muted); margin-top: 5px;">Based on historical trajectory.</p>
-            </div>
-        `;
-
+        html += `<div class="prediction-box"><h4 style="color: var(--secondary); margin-bottom: 5px;">🎯 Predicted Final Exam Score</h4><p style="font-size: 1.8rem; font-weight: bold; color: white;">${Math.round((avgAcc / 100) * 180)} <span style="font-size: 1rem; color: var(--text-muted);">/ 180</span></p><p style="font-size: 0.85rem; opacity: 0.8; color: var(--text-muted); margin-top: 5px;">Based on historical trajectory.</p></div>`;
         container.innerHTML = html;
     }
-    document.getElementById('stats-modal').classList.remove('hidden');
+    DOM.statsModal.classList.remove('hidden');
 });
 
-document.getElementById('close-stats-btn').addEventListener('click', () => {
-    document.getElementById('stats-modal').classList.add('hidden');
-});
+document.getElementById('close-stats-btn').addEventListener('click', () => DOM.statsModal.classList.add('hidden'));
 
-
-// --- 8. REVIEW FLOWS ---
-document.getElementById('review-btn').addEventListener('click', () => {
-    reviewMode = true;
-    resultModal.classList.add('hidden');
-    submitBtn.style.display = 'none';
-    
-    document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
-        const q = questions[idx];
-        const selected = userAnswers[q.id] || [];
-        let isCorrect = false, isPartial = false, isWrong = false;
-
-        if(selected.length > 0 && q.correctAnswers.length > 0) {
-            const hasWrongSelection = selected.some(val => !q.correctAnswers.includes(val));
-            if (hasWrongSelection) {
-                isWrong = true; 
-            } else if (selected.length === q.correctAnswers.length) {
-                isCorrect = true; 
-            } else {
-                isPartial = true; 
-            }
-        }
-        
-        btn.classList.remove('attempted');
-        if (isCorrect) btn.classList.add('review-correct');
-        else if (isPartial) btn.classList.add('review-partial');
-        else if (isWrong) btn.classList.add('review-wrong');
-    });
-    
-    loadQuestion(0);
-});
-
-
-// --- 9. MULTI-WEEK FILTER LOGIC ---
-const filterModal = document.getElementById('filter-modal');
-
-// Open Filter Modal
-filterBtn.addEventListener('click', () => {
+// Filtering Logic
+let pendingFilterChange = null;
+DOM.filterBtn.addEventListener('click', () => {
     if(currentFilter.length === TOTAL_WEEKS) {
-        filterAllCb.checked = true;
-        weekCbs.forEach(cb => cb.checked = true);
+        filterAllCb.checked = true; weekCbs.forEach(cb => cb.checked = true);
     } else {
-        filterAllCb.checked = false;
-        weekCbs.forEach(cb => {
-            cb.checked = currentFilter.includes(parseInt(cb.value));
-        });
+        filterAllCb.checked = false; weekCbs.forEach(cb => cb.checked = currentFilter.includes(parseInt(cb.value)));
     }
-    filterModal.classList.remove('hidden');
+    DOM.filterModal.classList.remove('hidden');
 });
 
-// Close Filter Modal
-document.getElementById('close-filter-btn').addEventListener('click', () => {
-    filterModal.classList.add('hidden');
-});
+document.getElementById('close-filter-btn').addEventListener('click', () => DOM.filterModal.classList.add('hidden'));
 
-// Check/Uncheck All
-filterAllCb.addEventListener('change', (e) => {
-    weekCbs.forEach(cb => cb.checked = e.target.checked);
-});
+filterAllCb.addEventListener('change', (e) => weekCbs.forEach(cb => cb.checked = e.target.checked));
+weekCbs.forEach(cb => cb.addEventListener('change', () => filterAllCb.checked = Array.from(weekCbs).every(c => c.checked)));
 
-// Individual Checkboxes interact with 'Select All'
-weekCbs.forEach(cb => {
-    cb.addEventListener('change', () => {
-        const allChecked = Array.from(weekCbs).every(c => c.checked);
-        filterAllCb.checked = allChecked;
-    });
-});
-
-// Apply New Filter
 document.getElementById('apply-filter-btn').addEventListener('click', () => {
     const selected = Array.from(weekCbs).filter(cb => cb.checked).map(cb => parseInt(cb.value));
-    if(selected.length === 0) {
-        alert("Please select at least one module.");
-        return;
-    }
+    if(selected.length === 0) { alert("Please select at least one module."); return; }
     localStorage.setItem('bfe_quiz_filter', JSON.stringify(selected));
-    localStorage.removeItem('bfe_quiz_state');
-    localStorage.removeItem('bfe_quiz_submitted');
+    localStorage.removeItem('bfe_quiz_state'); localStorage.removeItem('bfe_quiz_submitted');
     location.reload();
 });
 
-// --- 10. HARD RESET LOGIC ---
+// Reset logic
 document.getElementById('force-restart-btn')?.addEventListener('click', () => {
+    pendingFilterChange = null; 
     document.getElementById('reset-msg').textContent = "Are you sure you want to restart? Your current progress will be lost.";
-    resetModal.classList.remove('hidden');
+    DOM.resetModal.classList.remove('hidden');
 });
 
-document.getElementById('cancel-reset-btn').addEventListener('click', () => {
-    resetModal.classList.add('hidden');
-});
+document.getElementById('cancel-reset-btn').addEventListener('click', () => DOM.resetModal.classList.add('hidden'));
 
 document.getElementById('confirm-reset-btn').addEventListener('click', () => {
-    localStorage.removeItem('bfe_quiz_state');
-    localStorage.removeItem('bfe_quiz_submitted');
+    localStorage.removeItem('bfe_quiz_state'); localStorage.removeItem('bfe_quiz_submitted');
     location.reload();
 });
 
 document.getElementById('restart-btn').addEventListener('click', () => location.reload());
 
-// Run
 fetchLeaderboard();
 initQuiz();

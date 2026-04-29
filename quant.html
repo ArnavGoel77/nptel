@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quant - Exam Prep</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="index.html" class="back-btn">← Home</a>
+                <h1>🧮 Quantitative Practice</h1>
+            </div>
+            <div class="header-actions">
+                <button id="filter-btn" class="custom-select" style="display: flex; align-items: center; gap: 8px;">📚 Select Topics ▼</button>
+                <div class="progress-tracker">
+                    <span id="attempted-count">0</span> / <span id="total-count">0</span> Completed
+                </div>
+                <button id="force-restart-btn" class="btn outline">🔄 Reset Session</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container" style="grid-template-columns: 1fr;">
+        <main class="quiz-section" style="max-width: 800px; margin: 0 auto; width: 100%;">
+            <div class="card">
+                <div class="question-header">
+                    <span class="question-number" id="q-number">Question 1</span>
+                    <span class="question-type" id="q-topic">Topic Name</span>
+                </div>
+                <h2 id="question-text" class="question-text">Loading question...</h2>
+                <div id="options-container" class="options-container"></div>
+                
+                <!-- Immediate Feedback Box -->
+                <div id="feedback-box" class="feedback-box hidden">
+                    <h3 id="feedback-title">Correct!</h3>
+                    <p id="feedback-explanation">Explanation goes here...</p>
+                </div>
+                
+                <div class="controls" style="justify-content: flex-end;">
+                    <button id="action-btn" class="btn primary">Check Answer</button>
+                </div>
+            </div>
+            <button id="finish-session-btn" class="btn outline" style="width: 100%; margin-top: 20px;">End Practice & Get AI Analysis</button>
+        </main>
+    </div>
+
+    <!-- Multi-Topic Filter Modal -->
+    <div id="filter-modal" class="modal hidden">
+        <div class="modal-content card" style="max-width: 500px; text-align: left;">
+            <h2 style="text-align: center; margin-bottom: 5px;">📚 Select Topics</h2>
+            <p style="text-align: center; color: var(--error); font-size: 0.9rem; margin-bottom: 20px;">Applying a new filter will start a new session.</p>
+            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                <label class="filter-label" style="background: rgba(167, 139, 250, 0.1); border-color: var(--primary);">
+                    <input type="checkbox" id="filter-all"> <strong style="color: var(--primary-light);">Select All Topics</strong>
+                </label>
+            </div>
+            <div id="topic-cb-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 40vh; overflow-y: auto; padding-right: 5px;"></div>
+            <div class="modal-actions" style="margin-top: 30px;">
+                <button id="close-filter-btn" class="btn outline" style="flex: 1;">Cancel</button>
+                <button id="apply-filter-btn" class="btn primary" style="flex: 1;">Start Practice</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Modal -->
+    <div id="ai-modal" class="modal hidden">
+        <div class="modal-content card" style="max-width: 600px; text-align: left;">
+            <h2 style="text-align: center; margin-bottom: 5px;">🧠 AI Performance Analysis</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">Session Complete. Here is your breakdown.</p>
+            
+            <div id="ai-stats-container" class="ai-analysis-box"></div>
+            
+            <div class="modal-actions" style="margin-top: 30px;">
+                <button id="restart-btn" class="btn primary" style="width: 100%;">Start New Session</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-quant.js"></script>
+</body>
+</html>

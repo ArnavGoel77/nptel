@@ -3,137 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BFE Exam Prep - Pro Edition</title>
+    <title>Exam Prep</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <div class="header-content">
-            <h1>✨ Aritra Boom Boom Bokachoda Quiz</h1>
-            <div class="header-actions">
-                <button id="stats-btn" class="btn secondary" style="padding: 10px 15px; font-size: 0.95rem;">📊 My Stats</button>
-                <button id="filter-btn" class="custom-select" style="display: flex; align-items: center; justify-content: center; gap: 8px;">📚 Loading...</button>
-                <div class="progress-tracker">
-                    <span id="attempted-count">0</span> / <span id="total-count">0</span> Attempted
-                </div>
-                <button id="force-restart-btn" class="btn outline">
-                    🔄 Reset
-                </button>
-            </div>
+<body class="home-body">
+    <div class="home-container">
+        <div class="home-header">
+            <h1>🎓 Exam Prep Portal</h1>
+            <p>Select a subject to begin your personalized training.</p>
         </div>
-    </header>
 
-    <div class="main-container">
-        <main class="quiz-section">
-            <div class="card">
-                <div class="question-header">
-                    <span class="question-number" id="q-number">Question 1</span>
-                    <span class="question-type" id="q-type">Single Choice</span>
-                </div>
-                <h2 id="question-text" class="question-text">Loading question...</h2>
-                <div id="options-container" class="options-container"></div>
-                
-                <div class="controls">
-                    <button id="prev-btn" class="btn secondary">← Previous</button>
-                    <button id="clear-btn" class="btn outline">Clear Option</button>
-                    <button id="next-btn" class="btn primary">Next →</button>
-                </div>
-            </div>
+        <div class="subject-grid">
+            <!-- BFE Card -->
+            <a href="bfe.html" class="subject-card bfe-card">
+                <div class="card-icon">💼</div>
+                <h2>Business Fundamentals</h2>
+                <p>180 Questions • 12 Weeks • Global Leaderboard</p>
+                <div class="card-action">Start Mock Exam →</div>
+            </a>
 
-            <button id="submit-btn" class="btn submit-btn">🚀 Submit Quiz</button>
-        </main>
-
-        <div class="right-sidebar">
-            <aside class="navigator-section card">
-                <h3>📍 Navigator</h3>
-                <div class="nav-legend">
-                    <span class="legend-item"><span class="box current"></span> Current</span>
-                    <span class="legend-item"><span class="box attempted"></span> Attempted</span>
-                    <span class="legend-item"><span class="box unattempted"></span> Unattempted</span>
-                </div>
-                <div id="nav-grid" class="nav-grid"></div>
-            </aside>
-
-            <aside class="leaderboard-section card">
-                <h3>🏆 Global Leaderboard</h3>
-                <div id="leaderboard-container">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Loading scores...</p>
-                </div>
-            </aside>
+            <!-- Quant Card -->
+            <a href="quant.html" class="subject-card quant-card">
+                <div class="card-icon">🧮</div>
+                <h2>Quantitative Skills II</h2>
+                <p>Math & Logic • Immediate Feedback • AI Analysis</p>
+                <div class="card-action">Start Practice Mode →</div>
+            </a>
         </div>
     </div>
-
-    <div id="filter-modal" class="modal hidden">
-        <div class="modal-content card" style="max-width: 500px; text-align: left;">
-            <h2 style="text-align: center; margin-bottom: 5px;">📚 Select Modules</h2>
-            <p style="text-align: center; color: var(--error); font-size: 0.9rem; margin-bottom: 20px;">Applying a new filter will restart your current quiz.</p>
-            
-            <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
-                <label class="filter-label" style="background: rgba(167, 139, 250, 0.1); border-color: var(--primary);">
-                    <input type="checkbox" id="filter-all"> <strong style="color: var(--primary-light);">Select All Modules (0-12)</strong>
-                </label>
-            </div>
-            
-            <div id="week-cb-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 40vh; overflow-y: auto; padding-right: 5px;">
-                </div>
-            
-            <div class="modal-actions" style="margin-top: 30px;">
-                <button id="close-filter-btn" class="btn outline" style="flex: 1;">Cancel</button>
-                <button id="apply-filter-btn" class="btn primary" style="flex: 1;">Apply & Restart</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="stats-modal" class="modal hidden">
-        <div class="modal-content card" style="max-width: 500px; text-align: left;">
-            <h2 style="text-align: center; margin-bottom: 5px;">📊 Performance Analytics</h2>
-            <div id="stats-container" style="margin-top: 10px; max-height: 60vh; overflow-y: auto; padding-right: 10px;"></div>
-            <div class="modal-actions" style="margin-top: 30px;">
-                <button id="close-stats-btn" class="btn outline" style="width: 100%;">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="reset-modal" class="modal hidden">
-        <div class="modal-content card" style="max-width: 450px;">
-            <h2 style="color: var(--text-main); font-size: 1.5rem;">⚠️ Restart Quiz?</h2>
-            <p id="reset-msg" style="margin: 20px 0 30px; color: var(--text-muted); font-size: 1.05rem;">
-                Are you sure you want to restart? Your current progress will be lost.
-            </p>
-            <div class="modal-actions" style="margin-top: 0;">
-                <button id="cancel-reset-btn" class="btn outline" style="flex: 1;">Cancel</button>
-                <button id="confirm-reset-btn" class="btn primary" style="flex: 1; background: linear-gradient(135deg, var(--error), #ef4444); color: white; box-shadow: 0 4px 15px var(--error-glow);">Yes, Restart</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="result-modal" class="modal hidden">
-        <div class="modal-content card">
-            <h2>🎉 Quiz Results</h2>
-            <div class="score-display">
-                <span id="score-points">0</span> / <span id="total-points">180</span>
-            </div>
-            <p id="score-percentage">0% Accuracy</p>
-            
-            <div id="leaderboard-submission-area" class="hidden" style="margin: 25px 0; padding: 20px; background: rgba(0,0,0,0.3); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                <p style="margin-bottom: 15px; font-size: 0.95rem; font-weight: 600; color: var(--primary-light);">🏆 Save your score to the Global Leaderboard!</p>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="player-name" placeholder="Enter nickname..." style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-dark); color: white; outline: none;">
-                    <button id="post-score-btn" class="btn primary" style="padding: 10px 20px;">Post</button>
-                </div>
-                <p id="post-feedback" class="hidden" style="color: var(--secondary); font-size: 0.9rem; margin-top: 10px; font-weight: bold;">Score posted successfully!</p>
-            </div>
-
-            <div class="modal-actions">
-                <button id="review-btn" class="btn secondary">📝 Review Answers</button>
-                <button id="restart-btn" class="btn outline">🔄 Restart Quiz</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module" src="script.js"></script>
 </body>
 </html>
